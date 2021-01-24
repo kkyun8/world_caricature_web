@@ -1,0 +1,199 @@
+{
+  "products":
+  [
+    {
+      "id": 1, 
+      "title": "二人のため", 
+      "order_type": [1,4],
+      "number_of_people":2,
+      "price": 10000,
+      "production_time": 2,
+      "information":"information二人のため",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 2, 
+      "title": "思い出", 
+      "order_type": [1,2],
+      "number_of_people":2,
+      "price": 10000,
+      "production_time": 2,
+      "information":"information思い出",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 3, 
+      "title": "最後の先輩へ", 
+      "order_type":[3],
+      "number_of_people":2,
+      "price": 10000,
+      "production_time": 2,
+      "information":"information最後の先輩へ",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 4, 
+      "title": "結婚式", 
+      "order_type": [4],
+      "number_of_people":2,
+      "price": 10000,
+      "production_time": 2,
+      "information":"information結婚式",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 5, 
+      "title": "スタート", 
+      "order_type": [4],
+      "number_of_people":2,
+      "price": 10000,
+      "production_time": 2,
+      "information":"informationスタート",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    }
+  ],
+  "order_status":
+  [
+    {
+      "id": 1, 
+      "name": "仮登録",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 2, 
+      "name": "決済完了",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 3, 
+      "name": "作家連絡待ち",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 4, 
+      "name": "作家作業中",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 5, 
+      "name": "発送準備",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 6, 
+      "name": "発送中",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 7, 
+      "name": "発送済み",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    }
+  ],
+  "order_types":
+  [
+    {
+      "id": 1, 
+      "name": "カップル",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 2, 
+      "name": "プレゼント",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 3, 
+      "name": "引退式",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 4, 
+      "name": "結婚式",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    }
+  ],
+  "production_time":
+  [
+    {
+      "id": 1, 
+      "name": "１週間以内",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 2, 
+      "name": "１週間〜２週間",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 3, 
+      "name": "３週間ほど",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    },
+    {
+      "id": 4, 
+      "name": "１ヶ月以上",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    }
+  ],
+  "orders": [
+    {
+      "id":1,
+      "productId": "",
+      "orderNumber": "",
+      "status": 1,
+      "flameSize": "M",
+      "premiumWrapping": false,
+      "nameKanzi": "",
+      "nameFurigana": "",
+      "email": "",
+      "lineId": "",
+      "cellPhoneNumber": "",
+      "postalCode": null,
+      "address1": "",
+      "address2": "",
+      "comment": "",
+      "isSendEmail": false
+    }
+  ]
+}
