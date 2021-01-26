@@ -1,9 +1,9 @@
 <template>
-  <div id="sample_order">
-    <sample-image-carousel />
+  <div id="product">
+    <products-carousel />
     <div class="container">
       <section class="main-content columns">
-        <div class="container column is-10">
+        <div class="container column is-10 mb-6">
           <div id="search_form" class="mt-6 mb-6">
             <b-message type="is-warning">
               作家のスケジュール状況によりますが、商品が届くのは注文完了された日から２週間後です。
@@ -54,14 +54,14 @@
               </li>
             </ul>
           </div>
-          <div class="columns">
-            <image-card :title="'title'" :sample="sampleImage" />
-            <image-card :title="'title'" :sample="sampleImage" />
-            <image-card :title="'title'" :sample="sampleImage" />
-            <image-card :title="'title'" :sample="sampleImage" />
-          </div>
-          <div class="columns">
-            <image-card :title="'title'" :sample="sampleImage" />
+          <div
+            v-for="(pro, pgi) in products"
+            :key="`pgi${pgi}`"
+            class="columns"
+          >
+            <template v-for="(p, pi) in pro">
+              <image-card :key="`pgi${pgi}p${pi}`" :product="p" />
+            </template>
           </div>
         </div>
       </section>
@@ -70,14 +70,20 @@
 </template>
 
 <script>
-import SampleImageCarousel from '~/components/SampleImageCarousel'
+import { mapState, mapActions } from 'vuex'
+import ProductsCarousel from '~/components/ProductsCarousel'
 import ImageCard from '~/components/ImageCard'
 
 export default {
-  name: 'SampleOrder',
+  name: 'Products',
   components: {
-    SampleImageCarousel,
+    ProductsCarousel,
     ImageCard,
+  },
+  computed: {
+    ...mapState({
+      products: (state) => state.products.products,
+    }),
   },
   data() {
     return {
@@ -86,31 +92,13 @@ export default {
       tags: [],
       activeTab: 'おすすめ順',
       isModalActive: false,
-      sampleImage: {},
-      // TODO: DB
-      tagMockData: [
-        {
-          id: 1,
-          user: {
-            first_name: 'Jesse',
-            last_name: 'Simmons',
-          },
-          date: '2016/10/15 13:43:27',
-          gender: 'Male',
-        },
-        {
-          id: 4,
-          user: {
-            first_name: 'Clarence',
-            last_name: 'Flores',
-          },
-          date: '2016/04/10 10:28:46',
-          gender: 'Male',
-        },
-      ],
     }
   },
+  created() {
+    this.fetchProducts()
+  },
   methods: {
+    ...mapActions('products', ['fetchProducts']),
     clickTab(type) {
       this.activeTab = type
     },

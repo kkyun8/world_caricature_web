@@ -1,4 +1,4 @@
-json-server db.json --routes route.json -p 3333
+json-server ./json/db.json -p 3333
 
 http://localhost:3333/orders/1
 http://localhost:3333/orders?flameSize=M
