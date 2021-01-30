@@ -1,4 +1,8 @@
-# world_caricature_web# world_caricature_web
+# world_caricature_web
+
+似顔絵サイトリーファクトリー
+
+Nuxt + Bulma + amplify
 
 ## Build Setup
 

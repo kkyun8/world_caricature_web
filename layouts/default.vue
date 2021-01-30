@@ -12,7 +12,7 @@
       <template #start>
         <nuxt-link to="/artists" class="navbar-item">作家紹介</nuxt-link>
         <nuxt-link to="/order_flow" class="navbar-item">注文の流れ</nuxt-link>
-        <nuxt-link to="/sample_order" class="navbar-item">注文する</nuxt-link>
+        <nuxt-link to="/products" class="navbar-item">注文する</nuxt-link>
         <nuxt-link to="/order_search" class="navbar-item">注文確認</nuxt-link>
         <nuxt-link to="/about" class="navbar-item">About</nuxt-link>
         <nuxt-link to="/contact" class="navbar-item">Contact</nuxt-link>
@@ -39,6 +39,11 @@
         </p>
       </div>
     </footer>
+    <b-loading
+      v-model="isLoading"
+      :is-full-page="false"
+      :can-cancel="false"
+    ></b-loading>
   </div>
 </template>
 

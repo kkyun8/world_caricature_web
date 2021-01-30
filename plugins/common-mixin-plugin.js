@@ -29,14 +29,21 @@ if (!Vue.__my_mixin__) {
         },
         // setter
         set(newVal) {
-          if (newVal !== '') {
+          if ((newVal?.message | '') !== '') {
             this.$buefy.toast.open({
-              message: newVal,
+              message: newVal?.message,
               type: 'is-danger',
             })
           }
           this.$store.commit('common/setApiMessage', newVal)
         },
+      },
+    },
+    methods: {
+      readAllApi(apis) {
+        Promise.all(apis)
+          .catch((err) => (this.apiMessage = err))
+          .finally(() => (this.isLoading = false))
       },
     },
   })

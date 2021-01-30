@@ -1,21 +1,4 @@
 export const state = () => ({
-  order: {
-    sampleImageId: '',
-    orderNumber: '',
-    status: 1,
-    flameSize: 'M',
-    premiumWrapping: false,
-    nameKanzi: '',
-    nameFurigana: '',
-    email: '',
-    lineId: '',
-    cellPhoneNumber: '',
-    postalCode: null,
-    address1: '',
-    address2: '',
-    comment: '',
-    isSendEmail: false,
-  },
   orderLabelObj: {
     orderNumber: '注文番号',
     status: '状態',
@@ -32,8 +15,38 @@ export const state = () => ({
     comment: 'コメント',
     isSendEmail: 'やりとり方法',
   },
+  order: {
+    productId: '',
+    orderNumber: '',
+    status: 1,
+    flameSize: 'M',
+    premiumWrapping: false,
+    nameKanzi: '',
+    nameFurigana: '',
+    email: '',
+    lineId: '',
+    cellPhoneNumber: '',
+    postalCode: null,
+    address1: '',
+    address2: '',
+    comment: '',
+    isSendEmail: false,
+  },
+  targetOrder: [],
 })
 
-export const mutations = {}
+export const mutations = {
+  setTargetOrder(state, data) {
+    state.targetOrder = [...data]
+  },
+}
 
-export const actions = {}
+export const actions = {
+  async searchOrder({ commit }, { params }) {
+    // TODO: mock url
+    const result = await this.$axios.$get('/orders', { params }).then((res) => {
+      commit('setTargetOrder', res)
+    })
+    return result
+  },
+}
