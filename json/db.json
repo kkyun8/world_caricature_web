@@ -9,6 +9,18 @@
       "updated_at": "2020-01-01"
     }
   ],
+  "artists":
+  [
+    {
+      "id": 1, 
+      "name": "chik",
+      "service_years": 6,
+      "career_data": "career",
+      "delflg": false,
+      "created_at": "2020-01-01",
+      "updated_at": "2020-01-01"
+    }
+  ],
   "products":
   [
     {
@@ -19,6 +31,9 @@
       "price": 10000,
       "production_time": 2,
       "information":"information二人のため",
+      "product_detail_image_url": "url",
+      "artist_id": 1,
+      "artist_comment": "artist_commentartist_comment",
       "delflg": false,
       "created_at": "2020-01-01",
       "updated_at": "2020-01-01"
@@ -31,6 +46,9 @@
       "price": 10000,
       "production_time": 2,
       "information":"information思い出",
+      "product_detail_image_url": "url",
+      "artist_id": 1,
+      "artist_comment": "artist_commentartist_comment",
       "delflg": false,
       "created_at": "2020-01-01",
       "updated_at": "2020-01-01"
@@ -43,6 +61,9 @@
       "price": 10000,
       "production_time": 2,
       "information":"information最後の先輩へ",
+      "product_detail_image_url": "url",
+      "artist_id": 1,
+      "artist_comment": "artist_commentartist_comment",
       "delflg": false,
       "created_at": "2020-01-01",
       "updated_at": "2020-01-01"
@@ -55,6 +76,9 @@
       "price": 10000,
       "production_time": 2,
       "information":"information結婚式",
+      "product_detail_image_url": "url",
+      "artist_id": 1,
+      "artist_comment": "artist_commentartist_comment",
       "delflg": false,
       "created_at": "2020-01-01",
       "updated_at": "2020-01-01"
@@ -67,6 +91,9 @@
       "price": 10000,
       "production_time": 2,
       "information":"informationスタート",
+      "product_detail_image_url": "url",
+      "artist_id": 1,
+      "artist_comment": "artist_commentartist_comment",
       "delflg": false,
       "created_at": "2020-01-01",
       "updated_at": "2020-01-01"
