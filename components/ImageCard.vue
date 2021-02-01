@@ -42,7 +42,7 @@ export default {
     clickSampleDetail() {
       this.$router.push({
         path: 'product_detail',
-        query: { product: this.product },
+        query: { id: this.product.id },
       })
     },
   },
