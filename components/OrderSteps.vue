@@ -5,40 +5,51 @@
       v-model="activeStep"
       :rounded="true"
       :label-position="'bottom'"
-      :mobile-mode="true"
+      :mobile-mode="'compact'"
     >
-      <b-step-item step="1" label="Account" :clickable="isStepsClickable">
-        <h1 class="title has-text-centered">Account</h1>
-        Lorem ipsum dolor sit amet.
+      <b-step-item step="1" label="商品選択" :clickable="isStepsClickable">
+        <h1 class="title has-text-centered">商品を選択</h1>
+        まず商品を選択します。
+        ワルド似顔絵では、人数、絵スタイルなどが固定になってます。
       </b-step-item>
 
       <b-step-item
         step="2"
-        label="Profile"
+        label="注文情報記入"
         :clickable="isStepsClickable"
         :type="{ 'is-success': isProfileSuccess }"
       >
-        <h1 class="title has-text-centered">Profile</h1>
+        <h1 class="title has-text-centered">注文情報を記入</h1>
         Lorem ipsum dolor sit amet.
       </b-step-item>
 
       <b-step-item
         step="3"
         :visible="showSocial"
-        label="Social"
+        label="決済"
         :clickable="isStepsClickable"
       >
-        <h1 class="title has-text-centered">Social</h1>
+        <h1 class="title has-text-centered">決済する</h1>
         Lorem ipsum dolor sit amet.
       </b-step-item>
 
       <b-step-item
-        :step="showSocial ? '4' : '3'"
-        label="Finish"
+        step="4"
+        :visible="showSocial"
+        label="写真を送る"
         :clickable="isStepsClickable"
-        disabled
       >
-        <h1 class="title has-text-centered">Finish</h1>
+        <h1 class="title has-text-centered">写真を送る</h1>
+        Lorem ipsum dolor sit amet.
+      </b-step-item>
+
+      <b-step-item
+        step="5"
+        :visible="showSocial"
+        label="商品受け取る"
+        :clickable="isStepsClickable"
+      >
+        <h1 class="title has-text-centered">商品を受け取る</h1>
         Lorem ipsum dolor sit amet.
       </b-step-item>
     </b-steps>
