@@ -42,7 +42,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async searchOrder({ commit }, { params }) {
+  async readOrder({ commit }, { params }) {
     // TODO: mock url
     const result = await this.$axios.$get('/orders', { params }).then((res) => {
       commit('setTargetOrder', res)

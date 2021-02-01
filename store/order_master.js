@@ -21,28 +21,28 @@ export const mutations = {
 }
 
 export const actions = {
-  async getProductHashTag({ commit }) {
+  async readProductHashTag({ commit }) {
     // TODO: mock url
     const result = await this.$axios.$get('/product_hash_tag').then((res) => {
       commit('setProductHashTag', res)
     })
     return result
   },
-  async getOrderStatus({ commit }) {
+  async readOrderStatus({ commit }) {
     // TODO: mock url
     const result = await this.$axios.$get('/order_status').then((res) => {
       commit('setOrderStatus', res)
     })
     return result
   },
-  async getOrderTypes({ commit }) {
+  async readOrderTypes({ commit }) {
     // TODO: mock url
     const result = await this.$axios.$get('/order_types').then((res) => {
       commit('setOrderTypes', res)
     })
     return result
   },
-  async getProductionTime({ commit }) {
+  async readProductionTime({ commit }) {
     // TODO: mock url
     const result = await this.$axios.$get('/production_time').then((res) => {
       commit('setProductionTime', res)
