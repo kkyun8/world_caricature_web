@@ -10,23 +10,32 @@
         </b-navbar-item>
       </template>
       <template #start>
-        <nuxt-link to="/artists" class="navbar-item">作家紹介</nuxt-link>
         <nuxt-link to="/order_flow" class="navbar-item">注文の流れ</nuxt-link>
-        <nuxt-link to="/products" class="navbar-item">注文する</nuxt-link>
+        <nuxt-link to="/artists" class="navbar-item">作家紹介</nuxt-link>
+        <nuxt-link to="/products" class="navbar-item"
+          >注文する・商品一覧</nuxt-link
+        >
         <nuxt-link to="/order_search" class="navbar-item">注文確認</nuxt-link>
         <nuxt-link to="/about" class="navbar-item">About</nuxt-link>
         <nuxt-link to="/contact" class="navbar-item">Contact</nuxt-link>
       </template>
 
       <template #end>
-        <b-navbar-item tag="div">
-          <div class="buttons">
-            <a class="button is-primary">
-              <strong>Sign up</strong>
-            </a>
-            <a class="button is-light"> Log in </a>
-          </div>
-        </b-navbar-item>
+        <div class="navbar-item">
+          <font-awesome-layers
+            full-width
+            class="fa-2x has-text-primary"
+            @click="isCartModalActive = true"
+          >
+            <font-awesome-icon icon="shopping-cart" class="is-primary" />
+            <font-awesome-layers-text
+              counter
+              :value="cartCount"
+              position="top-right"
+              style="right: -10px"
+            />
+          </font-awesome-layers>
+        </div>
       </template>
     </b-navbar>
     <nuxt />
@@ -44,9 +53,85 @@
       :is-full-page="false"
       :can-cancel="false"
     ></b-loading>
+    <b-modal v-model="isCartModalActive" :width="640" scroll="keep">
+      <div class="card">
+        <div class="card-content">
+          <template v-if="cart.length === 0">
+            カートに商品がありません。
+          </template>
+          <template v-else>
+            <div
+              v-for="(p, pidx) in cart"
+              :key="`item-${pidx}`"
+              class="box mt-6 mb-6"
+            >
+              <div>{{ p.title }} {{ p.information }}</div>
+              <b-button
+                type="is-danger"
+                icon-left="delete"
+                @click="deleteItemInCart(p.id)"
+              >
+                削除
+              </b-button>
+            </div>
+          </template>
+        </div>
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <script>
-export default {}
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+export default {
+  data() {
+    return {
+      isCartModalActive: false,
+    }
+  },
+  computed: {
+    ...mapState({
+      cart: (state) => state.cart.cart,
+    }),
+    ...mapGetters({
+      cartCount: 'cart/cartCount',
+    }),
+  },
+  created() {
+    this.isLoading = true
+    // TODO:
+    // this.checkCookie()
+    const readProductHashTag = this.readProductHashTag()
+    const readOrderStatus = this.readOrderStatus()
+    const readOrderTypes = this.readOrderTypes()
+    const readProductionTime = this.readProductionTime()
+    this.readAllApi([
+      readProductHashTag,
+      readOrderStatus,
+      readOrderTypes,
+      readProductionTime,
+    ])
+  },
+  methods: {
+    ...mapActions('artists', ['readArtist']),
+    ...mapActions('order_master', [
+      'readProductHashTag',
+      'readOrderStatus',
+      'readOrderTypes',
+      'readProductionTime',
+    ]),
+    ...mapMutations({
+      setCart: 'cart/setCart',
+    }),
+    checkCookie() {
+      // TODO:
+      // const coo = document.cookie
+      // console.log(coo)
+    },
+    deleteItemInCart(id) {
+      const result = [...this.cart].filter((i) => id !== i.id)
+      this.setCart(result)
+    },
+  },
+}
 </script>

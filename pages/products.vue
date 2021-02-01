@@ -80,11 +80,6 @@ export default {
     ProductsCarousel,
     ImageCard,
   },
-  computed: {
-    ...mapState({
-      products: (state) => state.products.products,
-    }),
-  },
   data() {
     return {
       filteredTags: [],
@@ -94,11 +89,18 @@ export default {
       isModalActive: false,
     }
   },
+  computed: {
+    ...mapState({
+      products: (state) => state.products.products,
+    }),
+  },
   created() {
-    this.fetchProducts()
+    this.isLoading = true
+    const readProducts = this.readProducts()
+    this.readAllApi([readProducts])
   },
   methods: {
-    ...mapActions('products', ['fetchProducts']),
+    ...mapActions('products', ['readProducts']),
     clickTab(type) {
       this.activeTab = type
     },

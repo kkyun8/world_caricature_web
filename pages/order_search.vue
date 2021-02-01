@@ -153,36 +153,17 @@ export default {
   destroyed() {
     this.setTargetOrder(null)
   },
-  created() {
-    this.isLoading = true
-    const getProductHashTag = this.getProductHashTag()
-    const getOrderStatus = this.getOrderStatus()
-    const getOrderTypes = this.getOrderTypes()
-    const getProductionTime = this.getProductionTime()
-    this.readAllApi([
-      getProductHashTag,
-      getOrderStatus,
-      getOrderTypes,
-      getProductionTime,
-    ])
-  },
   methods: {
-    ...mapActions('order_info', ['searchOrder', 'setTargetOrder']),
-    ...mapActions('order_master', [
-      'getProductHashTag',
-      'getOrderStatus',
-      'getOrderTypes',
-      'getProductionTime',
-    ]),
+    ...mapActions('order_info', ['readOrder', 'setTargetOrder']),
     search() {
       if (!this.orderNumber && !this.email) {
       }
       this.isLoading = true
-      const searchOrder = this.searchOrder({
+      const readOrder = this.readOrder({
         orderNumber: this.orderNumber,
         email: this.email,
       })
-      this.readAllApi([searchOrder])
+      this.readAllApi([readOrder])
     },
   },
 }

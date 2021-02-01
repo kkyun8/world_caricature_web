@@ -1,6 +1,14 @@
 <template>
   <div id="order_detail">
     <div class="container">
+      <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="#">商品選択</a></li>
+          <li class="is-active">
+            <a href="#" aria-current="page">注文詳細</a>
+          </li>
+        </ul>
+      </nav>
       <section class="main-content columns mb-6">
         <div class="container column is-10 mb-6">
           <div class="containar is-max-desktop">
@@ -219,7 +227,7 @@
             </div>
             <div class="columns">
               <div class="column">
-                <nuxt-link to="/sample_order" class="button is-fullwidth"
+                <nuxt-link to="/products" class="button is-fullwidth"
                   ><i class="fa fa-backward mr-1" aria-hidden="true"></i
                   >サンプルオーダーにもどる</nuxt-link
                 >
@@ -241,7 +249,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   name: 'OrderDetail',
@@ -256,12 +264,9 @@ export default {
   computed: {
     ...mapState({
       order: (state) => state.order_info.order,
-      isSignedIn: (state) => state.user.isSignedIn,
     }),
   },
-  methods: {
-    ...mapMutations(['increment']),
-  },
+  methods: {},
 }
 </script>
 
