@@ -49,7 +49,20 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/dotenv',
+    'nuxt-fontawesome',
   ],
+
+  /*
+   ** FontAwesome
+   */
+  fontawesome: {
+    imports: [
+      {
+        set: '@fortawesome/free-solid-svg-icons',
+        icons: ['fas'],
+      },
+    ],
+  },
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: { baseURL: 'http://localhost:3333' },
   // Build Configuration (https://go.nuxtjs.dev/config-build)
