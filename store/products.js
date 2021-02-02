@@ -25,22 +25,23 @@ export const mutations = {
   },
 }
 
+export const getters = {
+  productPageArr(state) {
+    const values = [...state.products]
+
+    return values.reduce((a, i, index, array) => {
+      if ((index + 1) % 4 === 0 || index === 0) a.push([])
+      const key = Math.ceil((index + 1) / 4) - 1
+      a[key].push(i)
+      return a
+    }, [])
+  },
+}
+
 export const actions = {
   async readProducts({ commit }) {
-    const returnArr = []
     const result = await this.$axios.$get('/products').then((res) => {
-      let array = []
-      for (const value in res) {
-        const num = Number(value) + 1
-        if (num % 4 === 0 || num === res.length) {
-          array.push(res[value])
-          returnArr.push(array)
-          array = []
-        } else {
-          array.push(res[value])
-        }
-      }
-      commit('setProducts', returnArr)
+      commit('setProducts', res)
     })
     return result
   },

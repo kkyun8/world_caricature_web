@@ -55,7 +55,7 @@
             </ul>
           </div>
           <div
-            v-for="(pro, pgi) in products"
+            v-for="(pro, pgi) in productPageArr"
             :key="`pgi${pgi}`"
             class="columns"
           >
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import ProductsCarousel from '~/components/ProductsCarousel'
 import ImageCard from '~/components/ImageCard'
 
@@ -93,14 +93,11 @@ export default {
     ...mapState({
       products: (state) => state.products.products,
     }),
-  },
-  created() {
-    this.isLoading = true
-    const readProducts = this.readProducts()
-    this.readAllApi([readProducts])
+    ...mapGetters({
+      productPageArr: 'products/productPageArr',
+    }),
   },
   methods: {
-    ...mapActions('products', ['readProducts']),
     clickTab(type) {
       this.activeTab = type
     },
