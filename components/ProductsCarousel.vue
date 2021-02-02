@@ -9,7 +9,7 @@
       :indicator-style="indicatorStyle"
     >
       <b-carousel-item v-for="(carousel, i) in carousels" :key="i">
-        <section :class="`hero is-large is-${carousel.color}`">
+        <section :class="`hero is-medium is-${carousel.color}`">
           <div class="hero-body has-text-centered">
             <h1 class="title">{{ carousel.title }}</h1>
           </div>
