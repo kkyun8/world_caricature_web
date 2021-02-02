@@ -40,10 +40,34 @@ if (!Vue.__my_mixin__) {
       },
     },
     methods: {
+      /**
+       * REST GET api 共通ロジック
+       * @param {*} apis
+       */
       readAllApi(apis) {
         Promise.all(apis)
           .catch((err) => (this.apiMessage = err))
           .finally(() => (this.isLoading = false))
+      },
+      /**
+       * cookie reset
+       * @param {*} key
+       * @param {*} value
+       */
+      setCookie(key, value = undefined) {
+        const getCookie = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith(key))
+
+        if (getCookie) {
+          // 削除
+          document.cookie = getCookie + ';max-age=0'
+        }
+
+        if (value) {
+          const addValue = key + '=' + JSON.stringify(value) + '; '
+          document.cookie = addValue
+        }
       },
     },
   })

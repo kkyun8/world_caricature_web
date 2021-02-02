@@ -33,6 +33,7 @@
               :value="cartCount"
               position="top-right"
               style="right: -10px"
+              class="fa-lg"
             />
           </font-awesome-layers>
         </div>
@@ -61,7 +62,7 @@
           </template>
           <template v-else>
             <div
-              v-for="(p, pidx) in cart"
+              v-for="(p, pidx) in cartItem"
               :key="`item-${pidx}`"
               class="box mt-6 mb-6"
             >
@@ -76,6 +77,14 @@
             </div>
           </template>
         </div>
+        <footer class="card-footer">
+          <a
+            class="card-footer-item"
+            :disabled="cartCount === 0"
+            @click="deleteAllItemInCart()"
+            >カートクリア</a
+          >
+        </footer>
       </div>
     </b-modal>
   </div>
@@ -92,28 +101,37 @@ export default {
   computed: {
     ...mapState({
       cart: (state) => state.cart.cart,
+      cartCookieKey: (state) => state.common.cartCookieKey,
+      products: (state) => state.products.products,
     }),
     ...mapGetters({
       cartCount: 'cart/cartCount',
     }),
+    cartItem() {
+      return this.products.filter((p) => this.cart.includes(p.id))
+    },
   },
   created() {
     this.isLoading = true
-    // TODO:
-    // this.checkCookie()
     const readProductHashTag = this.readProductHashTag()
     const readOrderStatus = this.readOrderStatus()
     const readOrderTypes = this.readOrderTypes()
     const readProductionTime = this.readProductionTime()
+    const readProducts = this.readProducts()
     this.readAllApi([
       readProductHashTag,
       readOrderStatus,
       readOrderTypes,
       readProductionTime,
+      readProducts,
     ])
+  },
+  mounted() {
+    this.checkCookie()
   },
   methods: {
     ...mapActions('artists', ['readArtist']),
+    ...mapActions('products', ['readProducts']),
     ...mapActions('order_master', [
       'readProductHashTag',
       'readOrderStatus',
@@ -124,13 +142,32 @@ export default {
       setCart: 'cart/setCart',
     }),
     checkCookie() {
-      // TODO:
-      // const coo = document.cookie
-      // console.log(coo)
+      const key = this.cartCookieKey
+      const cookie = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith(key))
+      if (cookie) {
+        const cookieCart = JSON.parse(cookie.split('=')[1])
+        this.setCart(cookieCart)
+      }
     },
     deleteItemInCart(id) {
-      const result = [...this.cart].filter((i) => id !== i.id)
-      this.setCart(result)
+      const userCart = this.cart.filter((i) => id !== i)
+      this.setCart(userCart)
+      this.setCookie(this.cartCookieKey, userCart)
+    },
+    deleteAllItemInCart() {
+      this.$buefy.dialog.confirm({
+        message: 'カートを空にしますか？',
+        onConfirm: () => {
+          this.setCart([])
+          this.setCookie(this.cartCookieKey)
+          this.$buefy.toast.open({
+            message: '完了しました。',
+            type: 'is-success',
+          })
+        },
+      })
     },
   },
 }

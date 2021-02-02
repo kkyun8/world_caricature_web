@@ -121,6 +121,7 @@ export default {
       artist: (state) => state.artists.artist,
       product: (state) => state.products.product,
       cart: (state) => state.cart.cart,
+      cartCookieKey: (state) => state.common.cartCookieKey,
     }),
   },
   watch: {
@@ -144,8 +145,11 @@ export default {
     }),
     pushCart() {
       const userCart = [...this.cart]
-      userCart.push(this.product)
+      userCart.push(this.product.id)
       this.setCart(userCart)
+
+      this.setCookie(this.cartCookieKey, userCart)
+
       this.$buefy.notification.open({
         duration: 5000,
         message: 'カートに追加されました。',
