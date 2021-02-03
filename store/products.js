@@ -36,6 +36,9 @@ export const getters = {
       return a
     }, [])
   },
+  productItemInCart: (state) => (cart) => {
+    return cart.map((c) => state.products.find((p) => p.id === c))
+  },
 }
 
 export const actions = {
