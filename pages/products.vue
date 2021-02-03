@@ -60,7 +60,7 @@
             class="columns"
           >
             <template v-for="(p, pi) in pro">
-              <image-card :key="`pgi${pgi}p${pi}`" :product="p" />
+              <product-image-card :key="`pgi${pgi}p${pi}`" :product="p" />
             </template>
           </div>
         </div>
@@ -72,13 +72,13 @@
 <script>
 import { mapState, mapGetters } from 'vuex'
 import ProductsCarousel from '~/components/ProductsCarousel'
-import ImageCard from '~/components/ImageCard'
+import ProductImageCard from '~/components/ProductImageCard'
 
 export default {
   name: 'Products',
   components: {
     ProductsCarousel,
-    ImageCard,
+    ProductImageCard,
   },
   data() {
     return {
