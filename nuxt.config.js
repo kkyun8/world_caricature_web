@@ -3,6 +3,8 @@ const {
   SQUARE_APPLICATION_ID,
   SQUARE_ACCESS_TOKEN,
   SQUARE_LOCATION_ID,
+  CART_MAX_COUNT,
+  CART_LOCAL_STORAGE_KEY,
 } = process.env
 export default {
   // Global page headers (https://go.nuxtjs.dev/config-head)
@@ -72,5 +74,7 @@ export default {
     SQUARE_APPLICATION_ID,
     SQUARE_ACCESS_TOKEN,
     SQUARE_LOCATION_ID,
+    CART_MAX_COUNT,
+    CART_LOCAL_STORAGE_KEY,
   },
 }

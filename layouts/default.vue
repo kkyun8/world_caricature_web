@@ -13,7 +13,7 @@
         <nuxt-link to="/order_flow" class="navbar-item">注文の流れ</nuxt-link>
         <nuxt-link to="/artists" class="navbar-item">作家紹介</nuxt-link>
         <nuxt-link to="/products" class="navbar-item"
-          >注文する・商品一覧</nuxt-link
+          >商品一覧から注文する</nuxt-link
         >
         <nuxt-link to="/order_search" class="navbar-item">注文確認</nuxt-link>
         <nuxt-link to="/about" class="navbar-item">About</nuxt-link>
@@ -61,23 +61,60 @@
             カートに商品がありません。
           </template>
           <template v-else>
-            <div
-              v-for="(p, pidx) in cartItem"
-              :key="`item-${pidx}`"
-              class="box mt-6 mb-6"
+            <b-button
+              label="チェックを全て外す"
+              type="is-warning"
+              icon-left="close"
+              class="field"
+              @click="checkedCartItems = []"
+            />
+            <b-button
+              label="チェック商品を削除"
+              type="is-error"
+              icon-left="delete"
+              class="field"
+              :disabled="checkedCartItems.length === 0"
+              @click="deleteItemInCart()"
+            />
+            <b-table
+              :data="cartItems"
+              :striped="true"
+              :mobile-cards="true"
+              :checkbox-position="'left'"
+              :checked-rows.sync="checkedCartItems"
+              checkable
             >
-              <div>{{ p.title }} {{ p.information }}</div>
-              <b-button
-                type="is-danger"
-                icon-left="delete"
-                @click="deleteItemInCart(p.id)"
+              <b-table-column v-slot="props" field="no" label="No">
+                {{ props.row.no }}
+              </b-table-column>
+              <b-table-column v-slot="props" field="title" label="タイトル">
+                {{ props.row.title }}
+              </b-table-column>
+              <b-table-column
+                v-slot="props"
+                field="number_of_people"
+                label="人数"
               >
-                削除
-              </b-button>
-            </div>
+                {{ props.row.number_of_people }}名
+              </b-table-column>
+              <b-table-column v-slot="props" field="price" label="値段">
+                {{ props.row.price }}円
+              </b-table-column>
+              <template>
+                <div class="has-text-right">
+                  <strong>決済金額：{{ totalPrice }}円</strong>
+                </div>
+              </template>
+            </b-table>
           </template>
         </div>
         <footer class="card-footer">
+          <a
+            class="card-footer-item is-pr"
+            :disabled="cartCount === 0"
+            @click="createOrder()"
+            >注文作成</a
+          >
           <a
             class="card-footer-item"
             :disabled="cartCount === 0"
@@ -96,19 +133,44 @@ export default {
   data() {
     return {
       isCartModalActive: false,
+      checkedCartItems: [],
     }
   },
   computed: {
     ...mapState({
       cart: (state) => state.cart.cart,
-      cartCookieKey: (state) => state.common.cartCookieKey,
+      cartLocalStorageKey: (state) => state.common.cartLocalStorageKey,
       products: (state) => state.products.products,
     }),
     ...mapGetters({
       cartCount: 'cart/cartCount',
+      productItemInCart: 'products/productItemInCart',
     }),
-    cartItem() {
-      return this.products.filter((p) => this.cart.includes(p.id))
+    cartItems() {
+      let result = this.productItemInCart(this.cart)
+
+      if (result) {
+        result = result.map((i, index) => {
+          if (i) {
+            i.no = index + 1
+            return i
+          }
+        })
+      }
+
+      return result
+    },
+    totalPrice() {
+      let price = 0
+      if (this.cartItems) {
+        price = this.cartItems.reduce((a, i) => {
+          if (i) {
+            a = a + i.price
+            return a
+          }
+        }, 0)
+      }
+      return price
     },
   },
   created() {
@@ -127,7 +189,7 @@ export default {
     ])
   },
   mounted() {
-    this.checkCookie()
+    this.checkLocalStorage()
   },
   methods: {
     ...mapActions('artists', ['readArtist']),
@@ -141,33 +203,41 @@ export default {
     ...mapMutations({
       setCart: 'cart/setCart',
     }),
-    checkCookie() {
-      const key = this.cartCookieKey
-      const cookie = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith(key))
-      if (cookie) {
-        const cookieCart = JSON.parse(cookie.split('=')[1])
-        this.setCart(cookieCart)
+    checkLocalStorage() {
+      const key = this.cartLocalStorageKey
+      const storage = localStorage
+      const value = storage.getItem(key)
+      if (value) {
+        const items = JSON.parse(value)
+        this.setCart(items)
       }
     },
-    deleteItemInCart(id) {
-      const userCart = this.cart.filter((i) => id !== i)
+    deleteItemInCart() {
+      const checkIds = this.checkedCartItems.map((i) => i.id)
+      this.checkedCartItems = []
+
+      const userCart = this.cart.filter((i) => !checkIds.includes(i))
       this.setCart(userCart)
-      this.setCookie(this.cartCookieKey, userCart)
+      this.setLocalStorage(this.cartLocalStorageKey, userCart)
     },
     deleteAllItemInCart() {
       this.$buefy.dialog.confirm({
         message: 'カートを空にしますか？',
         onConfirm: () => {
           this.setCart([])
-          this.setCookie(this.cartCookieKey)
+          this.setLocalStorage(this.cartLocalStorageKey)
           this.$buefy.toast.open({
             message: '完了しました。',
             type: 'is-success',
           })
         },
       })
+    },
+    createOrder() {
+      this.$router.push({
+        path: 'order_detail',
+      })
+      this.isCartModalActive = false
     },
   },
 }

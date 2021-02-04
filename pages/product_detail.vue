@@ -121,7 +121,8 @@ export default {
       artist: (state) => state.artists.artist,
       product: (state) => state.products.product,
       cart: (state) => state.cart.cart,
-      cartCookieKey: (state) => state.common.cartCookieKey,
+      cartMaxCount: (state) => state.cart.cartMaxCount,
+      cartLocalStorageKey: (state) => state.common.cartLocalStorageKey,
     }),
   },
   watch: {
@@ -144,11 +145,15 @@ export default {
       setCart: 'cart/setCart',
     }),
     pushCart() {
+      if (this.cartMaxCount <= this.cart.length) {
+        const msg = `カートの最大商品数（${this.cartMaxCount}個）以上セットできません。<br />分割注文してください。`
+        return this.$buefy.dialog.alert(msg)
+      }
       const userCart = [...this.cart]
       userCart.push(this.product.id)
       this.setCart(userCart)
 
-      this.setCookie(this.cartCookieKey, userCart)
+      this.setLocalStorage(this.cartLocalStorageKey, userCart)
 
       this.$buefy.notification.open({
         duration: 5000,

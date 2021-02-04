@@ -50,23 +50,16 @@ if (!Vue.__my_mixin__) {
           .finally(() => (this.isLoading = false))
       },
       /**
-       * cookie reset
+       *
        * @param {*} key
        * @param {*} value
        */
-      setCookie(key, value = undefined) {
-        const getCookie = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith(key))
-
-        if (getCookie) {
-          // 削除
-          document.cookie = getCookie + ';max-age=0'
-        }
-
+      setLocalStorage(key, value = undefined) {
+        const storage = localStorage
         if (value) {
-          const addValue = key + '=' + JSON.stringify(value) + '; '
-          document.cookie = addValue
+          storage.setItem(key, JSON.stringify(value))
+        } else {
+          storage.removeItem(key)
         }
       },
     },

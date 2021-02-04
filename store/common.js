@@ -1,8 +1,7 @@
 export const state = () => ({
   isLoading: false,
   apiMessage: '',
-  // TODO: env set
-  cartCookieKey: 'worldcaricature_web_cart',
+  cartLocalStorageKey: process.env.CART_LOCAL_STORAGE_KEY,
 })
 export const mutations = {
   setIsLoading(state, data) {
