@@ -26,16 +26,6 @@ export const mutations = {
 }
 
 export const getters = {
-  productPageArr(state) {
-    const values = [...state.products]
-
-    return values.reduce((a, i, index, array) => {
-      if ((index + 1) % 4 === 0 || index === 0) a.push([])
-      const key = Math.ceil((index + 1) / 4) - 1
-      a[key].push(i)
-      return a
-    }, [])
-  },
   productItemInCart: (state) => (cart) => {
     return cart.map((c) => state.products.find((p) => p.id === c))
   },

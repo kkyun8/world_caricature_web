@@ -3,7 +3,7 @@
     <products-carousel />
     <div class="container">
       <section class="main-content columns">
-        <div class="container column is-10 mb-6">
+        <div class="container column is-11 mb-6">
           <div id="search_form" class="mt-6 mb-6">
             <b-message type="is-warning">
               作家のスケジュール状況によりますが、商品が届くのは注文完了された日から２週間後です。
@@ -13,14 +13,14 @@
                 v-model="tags"
                 :data="filteredTags"
                 autocomplete
-                field="user.first_name"
+                field="hash"
                 icon="label"
                 placeholder="キーワード"
+                maxtags="10"
                 @typing="getFilteredTags"
               >
                 <template v-slot="props">
-                  <strong>{{ props.option.id }}</strong
-                  >: {{ props.option.user.first_name }}
+                  {{ props.option.hash }}
                 </template>
                 <template #empty> There are no items </template>
               </b-taginput>
@@ -55,13 +55,28 @@
             </ul>
           </div>
           <div
-            v-for="(pro, pgi) in productPageArr"
+            v-for="(pro, pgi) in productPageItems"
             :key="`pgi${pgi}`"
             class="columns"
           >
             <template v-for="(p, pi) in pro">
               <product-image-card :key="`pgi${pgi}p${pi}`" :product="p" />
             </template>
+          </div>
+
+          <div class="mt-6">
+            <b-pagination
+              v-model="current"
+              :total="total"
+              :rounded="true"
+              :per-page="perPage"
+              order="is-centered"
+              aria-next-label="Next page"
+              aria-previous-label="Previous page"
+              aria-page-label="Page"
+              aria-current-label="Current page"
+            >
+            </b-pagination>
           </div>
         </div>
       </section>
@@ -70,7 +85,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
+import { mapState } from 'vuex'
 import ProductsCarousel from '~/components/ProductsCarousel'
 import ProductImageCard from '~/components/ProductImageCard'
 
@@ -82,38 +97,82 @@ export default {
   },
   data() {
     return {
-      filteredTags: [],
       isSelectOnly: false,
+      filteredTags: this.productHashTags,
       tags: [],
+      // TODO: not japanese
       activeTab: 'おすすめ順',
-      isModalActive: false,
+      current: 1,
+      perPage: 12,
     }
   },
   computed: {
     ...mapState({
+      productHashTags: (state) => state.order_master.productHashTags,
+      orderTypes: (state) => state.order_master.orderTypes,
+      productionTimes: (state) => state.order_master.productionTimes,
       products: (state) => state.products.products,
     }),
-    ...mapGetters({
-      productPageArr: 'products/productPageArr',
-    }),
+    total() {
+      return this.products.length
+    },
+    productPageItems() {
+      const c = this.current
+      const start = c === 1 ? 0 : (c - 1) * this.perPage
+      const end = c * this.perPage
+
+      const values = [...this.products]
+
+      const ots = [...this.orderTypes]
+      const pts = [...this.productionTimes]
+
+      let result = values
+        .filter((e, i) => start < i + 1 && i + 1 <= end)
+        .map((i) => {
+          i.order_type_name = ots
+            .filter((o) => i.order_type.includes(o.id))
+            .map((o) => o.name)
+            .join(' ')
+
+          const productionTimeData = pts.find((t) => i.production_time === t.id)
+          i.production_time_name = productionTimeData
+            ? productionTimeData.name
+            : ''
+          return i
+        })
+
+      if (this.tags.length > 0) {
+        const hashs = this.tags.map((t) => t.hash)
+        result = result.filter((i) => {
+          return hashs.some((h) => {
+            return (
+              i.title.includes(h) ||
+              i.information.includes(h) ||
+              i.order_type_name.includes(h) ||
+              i.production_time_name.includes(h)
+            )
+          })
+        })
+      }
+
+      result = result.reduce((a, i, index, array) => {
+        if ((index + 1) % 4 === 0 || index === 0) a.push([])
+        const key = Math.ceil((index + 1) / 4) - 1
+        a[key].push(i)
+        return a
+      }, [])
+
+      return result
+    },
   },
   methods: {
     clickTab(type) {
       this.activeTab = type
     },
     getFilteredTags(text) {
-      this.filteredTags = this.tagMockData.filter((option) => {
-        return option.user.first_name
-          .toString()
-          .toLowerCase()
-          .includes(text.toLowerCase())
+      this.filteredTags = this.productHashTags.filter((option) => {
+        return option.hash.toString().toLowerCase().includes(text.toLowerCase())
       })
-    },
-    openModal(image) {
-      this.isModalActive = true
-    },
-    closeModal() {
-      this.isModalActive = false
     },
   },
 }
