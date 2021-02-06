@@ -175,16 +175,17 @@ export default {
   },
   created() {
     this.isLoading = true
-    const readProductHashTag = this.readProductHashTag()
+    const readProductHashTags = this.readProductHashTag()
     const readOrderStatus = this.readOrderStatus()
     const readOrderTypes = this.readOrderTypes()
-    const readProductionTime = this.readProductionTime()
+    const readProductionTimes = this.readProductionTimes()
     const readProducts = this.readProducts()
+
     this.readAllApi([
-      readProductHashTag,
+      readProductHashTags,
       readOrderStatus,
       readOrderTypes,
-      readProductionTime,
+      readProductionTimes,
       readProducts,
     ])
   },
@@ -198,7 +199,7 @@ export default {
       'readProductHashTag',
       'readOrderStatus',
       'readOrderTypes',
-      'readProductionTime',
+      'readProductionTimes',
     ]),
     ...mapMutations({
       setCart: 'cart/setCart',

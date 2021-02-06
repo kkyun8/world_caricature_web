@@ -1,13 +1,13 @@
 export const state = () => ({
-  productHashTag: [],
+  productHashTags: [],
   orderStatus: [],
   orderTypes: [],
-  productionTime: [],
+  setProductionTimes: [],
 })
 
 export const mutations = {
-  setProductHashTag(state, data) {
-    state.productHashTag = [...data]
+  setProductHashTags(state, data) {
+    state.productHashTags = [...data]
   },
   setOrderStatus(state, data) {
     state.orderStatus = [...data]
@@ -15,16 +15,16 @@ export const mutations = {
   setOrderTypes(state, data) {
     state.orderTypes = [...data]
   },
-  setProductionTime(state, data) {
-    state.productionTime = [...data]
+  setProductionTimes(state, data) {
+    state.productionTimes = [...data]
   },
 }
 
 export const actions = {
   async readProductHashTag({ commit }) {
     // TODO: mock url
-    const result = await this.$axios.$get('/product_hash_tag').then((res) => {
-      commit('setProductHashTag', res)
+    const result = await this.$axios.$get('/product_hash_tags').then((res) => {
+      commit('setProductHashTags', res)
     })
     return result
   },
@@ -42,10 +42,10 @@ export const actions = {
     })
     return result
   },
-  async readProductionTime({ commit }) {
+  async readProductionTimes({ commit }) {
     // TODO: mock url
-    const result = await this.$axios.$get('/production_time').then((res) => {
-      commit('setProductionTime', res)
+    const result = await this.$axios.$get('/production_times').then((res) => {
+      commit('setProductionTimes', res)
     })
     return result
   },
