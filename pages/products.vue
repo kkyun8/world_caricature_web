@@ -29,26 +29,26 @@
           <div class="tabs">
             <ul>
               <li
-                :class="{ 'is-active': activeTab === 'おすすめ順' }"
-                @click.stop.prevent="clickTab('おすすめ順')"
+                :class="{ 'is-active': activeTab === 'recommend' }"
+                @click.stop.prevent="clickTab('recommend')"
               >
                 <a>おすすめ順</a>
               </li>
               <li
-                :class="{ 'is-active': activeTab === '人気順' }"
-                @click.stop.prevent="clickTab('人気順')"
+                :class="{ 'is-active': activeTab === 'popularity' }"
+                @click.stop.prevent="clickTab('popularity')"
               >
                 <a>人気順</a>
               </li>
               <li
-                :class="{ 'is-active': activeTab === '価格安い順' }"
-                @click.stop.prevent="clickTab('価格安い順')"
+                :class="{ 'is-active': activeTab === 'inexpensive' }"
+                @click.stop.prevent="clickTab('inexpensive')"
               >
                 <a>価格安い順</a>
               </li>
               <li
-                :class="{ 'is-active': activeTab === '価格高い順' }"
-                @click.stop.prevent="clickTab('価格高い順')"
+                :class="{ 'is-active': activeTab === 'expensive' }"
+                @click.stop.prevent="clickTab('expensive')"
               >
                 <a>価格高い順</a>
               </li>
@@ -100,8 +100,7 @@ export default {
       isSelectOnly: false,
       filteredTags: this.productHashTags,
       tags: [],
-      // TODO: not japanese
-      activeTab: 'おすすめ順',
+      activeTab: 'recommend',
       current: 1,
       perPage: 12,
     }
@@ -117,6 +116,8 @@ export default {
       return this.products.length
     },
     productPageItems() {
+      const sortType = this.activeTab
+
       const c = this.current
       const start = c === 1 ? 0 : (c - 1) * this.perPage
       const end = c * this.perPage
@@ -127,6 +128,22 @@ export default {
       const pts = [...this.productionTimes]
 
       let result = values
+        .sort((a, b) => {
+          if (sortType === 'expensive') {
+            return b.price - a.price
+          } else if (sortType === 'inexpensive') {
+            return a.price - b.price
+          } else if (a.sort[sortType] && b.sort[sortType]) {
+            return a.sort[sortType] - b.sort[sortType]
+          } else {
+            if (a.sort[sortType]) {
+              return -1
+            }
+            if (b.sort[sortType]) {
+              return 1
+            }
+          }
+        })
         .filter((e, i) => start < i + 1 && i + 1 <= end)
         .map((i) => {
           i.order_type_name = ots
