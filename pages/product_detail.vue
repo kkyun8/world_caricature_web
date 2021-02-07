@@ -58,16 +58,15 @@
               <div class="m-4">
                 {{ product.information }}
               </div>
-              <h4>詳細情報</h4>
               <div class="m-4">
-                人数：{{ product.number_of_people }}
+                人数：{{ product.number_of_people }}名
                 <br />
-                注文タイプ{{ product.order_type }}
+                タイプ：{{ orderTypeName }}
                 <br />
-                ¥{{ product.price }}
+                {{ product.price }}円
                 <br />
-                作業時間
-                {{ product.production_time }}
+                作業時間：
+                {{ productionTimeName }}
               </div>
               <div class="columns">
                 <div class="column">
@@ -123,7 +122,27 @@ export default {
       cart: (state) => state.cart.cart,
       cartMaxCount: (state) => state.cart.cartMaxCount,
       cartLocalStorageKey: (state) => state.common.cartLocalStorageKey,
+      orderTypes: (state) => state.order_master.orderTypes,
+      productionTimes: (state) => state.order_master.productionTimes,
     }),
+    orderTypeName() {
+      if (this.product.id === 0) return ''
+      const ots = [...this.orderTypes]
+      const result = this.product.order_type
+        .map((o) => {
+          const ot = ots.find((t) => o === t.id)
+          return ot.name
+        })
+        .join(' ')
+      return result
+    },
+    productionTimeName() {
+      if (this.product.id === 0) return ''
+      const result = this.productionTimes.find(
+        (p) => p.id === this.product.production_time
+      )
+      return result.name
+    },
   },
   watch: {
     product(newVal) {
@@ -133,7 +152,7 @@ export default {
       }
     },
   },
-  mounted() {
+  created() {
     this.isLoading = true
     const readProduct = this.readProduct({ id: this.$route.query.id })
     this.readAllApi([readProduct])

@@ -130,7 +130,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'OrderSearch',
@@ -147,14 +147,17 @@ export default {
       targetOrder: (state) => state.order_info.targetOrder,
       orderStatus: (state) => state.order_master.orderStatus,
       orderTypes: (state) => state.order_master.orderTypes,
-      productionTime: (state) => state.order_master.productionTime,
+      productionTimes: (state) => state.order_master.productionTimes,
     }),
   },
-  destroyed() {
+  beforeDestroy() {
     this.setTargetOrder(null)
   },
   methods: {
-    ...mapActions('order_info', ['readOrder', 'setTargetOrder']),
+    ...mapActions('order_info', ['readOrder']),
+    ...mapMutations({
+      setTargetOrder: 'order_info/setTargetOrder',
+    }),
     search() {
       if (!this.orderNumber && !this.email) {
       }
