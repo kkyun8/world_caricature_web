@@ -259,7 +259,7 @@ export default {
     flamePrice() {
       const options = this.productOptions
       const result = this.cartItems.reduce((a, i) => {
-        const flame = options[i.id].flameSize === 'L' ? 1500 : 0
+        const flame = options[i.id]?.flameSize === 'L' ? 1500 : 0
         return a + flame
       }, 0)
       return result
@@ -269,7 +269,7 @@ export default {
     wrappingPrice() {
       const options = this.productOptions
       const result = this.cartItems.reduce((a, i) => {
-        const wrapping = options[i.id].premiumWrapping ? 1000 : 0
+        const wrapping = options[i.id]?.premiumWrapping ? 1000 : 0
         return a + wrapping
       }, 0)
       return result
@@ -278,22 +278,19 @@ export default {
       return this.productPrice + this.flamePrice + this.wrappingPrice
     },
   },
-  watch: {
-    cartItems(newVal) {
-      const flameSize = 'M'
-      const premiumWrapping = false
-      this.productOptions = newVal.reduce((a, c) => {
-        const { id } = c
-        a[id] = {
-          flameSize,
-          premiumWrapping,
-        }
-        return a
-      }, {})
-    },
-  },
   created() {
     this.editOrder = JSON.parse(JSON.stringify(this.defaultOrder))
+    const flameSize = 'M'
+    const premiumWrapping = false
+    const result = this.cartItems.reduce((a, c) => {
+      const { id } = c
+      a[id] = {
+        flameSize,
+        premiumWrapping,
+      }
+      return a
+    }, {})
+    this.productOptions = result
   },
   beforeDestroy() {
     this.editOrder = {}

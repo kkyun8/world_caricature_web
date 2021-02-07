@@ -22,6 +22,11 @@
 
       <template #end>
         <div class="navbar-item">
+          <font-awesome-layers full-width class="fa-2x has-text-primary">
+            <font-awesome-icon icon="sign-in-alt" class="is-primary" />
+          </font-awesome-layers>
+        </div>
+        <div class="navbar-item">
           <font-awesome-layers
             full-width
             class="fa-2x has-text-primary"
@@ -111,13 +116,13 @@
         <footer class="card-footer">
           <a
             class="card-footer-item is-pr"
-            :disabled="cartCount === 0"
+            :class="{ 'has-text-grey-lighter': cartCount === 0 }"
             @click="createOrder()"
             >注文作成</a
           >
           <a
             class="card-footer-item"
-            :disabled="cartCount === 0"
+            :class="{ 'has-text-grey-lighter': cartCount === 0 }"
             @click="deleteAllItemInCart()"
             >カートクリア</a
           >
@@ -214,14 +219,15 @@ export default {
       }
     },
     deleteItemInCart() {
-      const checkIds = this.checkedCartItems.map((i) => i.id)
+      const checkNos = this.checkedCartItems.map((i) => i.no - 1)
       this.checkedCartItems = []
 
-      const userCart = this.cart.filter((i) => !checkIds.includes(i))
+      const userCart = this.cart.filter((i, index) => !checkNos.includes(index))
       this.setCart(userCart)
       this.setLocalStorage(this.cartLocalStorageKey, userCart)
     },
     deleteAllItemInCart() {
+      if (this.cartCount === 0) return
       this.$buefy.dialog.confirm({
         message: 'カートを空にしますか？',
         onConfirm: () => {
@@ -235,6 +241,7 @@ export default {
       })
     },
     createOrder() {
+      if (this.cartCount === 0) return
       this.$router.push({
         path: 'order_detail',
       })

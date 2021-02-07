@@ -29,24 +29,26 @@
         <div class="content">
           <!-- TODO: 詳細情報デザイン -->
           値段：{{ product.price }}円 作業人数：{{ product.number_of_people }}名
-          <b-field>
-            <b-select
-              v-model="productOptions[product.id].flameSize"
-              placeholder="フレームサイズ"
-            >
-              <option :value="'M'">M</option>
-              <option :value="'L'">L</option>
-            </b-select>
-          </b-field>
-          <b-field>
-            <b-select
-              v-model="productOptions[product.id].premiumWrapping"
-              placeholder="プレミアムラッピングの有無"
-            >
-              <option :value="true">あり</option>
-              <option :value="false">なし</option>
-            </b-select>
-          </b-field>
+          <template v-if="productOptions[product.id]">
+            <b-field>
+              <b-select
+                v-model="productOptions[product.id].flameSize"
+                placeholder="フレームサイズ"
+              >
+                <option :value="'M'">M</option>
+                <option :value="'L'">L</option>
+              </b-select>
+            </b-field>
+            <b-field>
+              <b-select
+                v-model="productOptions[product.id].premiumWrapping"
+                placeholder="プレミアムラッピングの有無"
+              >
+                <option :value="true">あり</option>
+                <option :value="false">なし</option>
+              </b-select>
+            </b-field>
+          </template>
         </div>
       </div>
     </b-collapse>

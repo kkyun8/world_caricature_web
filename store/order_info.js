@@ -15,12 +15,10 @@ export const state = () => ({
     comment: 'コメント',
     isSendEmail: 'やりとり方法',
   },
-  order: {
-    productId: '',
+  defaultOrder: {
+    productOptions: [],
     orderNumber: '',
     status: 1,
-    flameSize: 'M',
-    premiumWrapping: false,
     nameKanzi: '',
     nameFurigana: '',
     email: '',
@@ -33,11 +31,15 @@ export const state = () => ({
     isSendEmail: false,
   },
   targetOrder: [],
+  order: {},
 })
 
 export const mutations = {
   setTargetOrder(state, data) {
-    state.targetOrder = [...data]
+    state.targetOrder = data
+  },
+  setOrder(state, data) {
+    state.order = data
   },
 }
 

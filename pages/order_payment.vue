@@ -10,7 +10,7 @@
                 <b-message type="is-info">
                   作家の事情によりますが、基本注文日から１〜２週間の間に発送されます。ご注意ください。
                 </b-message>
-                <b-datepicker v-model="reserveDates" inline range>
+                <b-datepicker v-model="reserveDates" inline range disabled>
                   <template #header>
                     <div class="content mt-1" style="text-align: center">
                       お届け予定日：{{ reserveDateJp }}
@@ -19,22 +19,12 @@
                 </b-datepicker>
               </div>
               <div class="column">
-                <div class="card">
-                  <header class="card-header">
-                    <span class="card-header-title">注文情報</span>
-                  </header>
+                <product-collapses :products="cartItems" />
+                <!-- TODO: -->
+                <div class="card mt-6">
                   <div class="card-content">
-                    <div class="content" style="">
-                      <div class="order-info-row">
-                        <div class="border-bottom-line">
-                          {{ orderLabelObj['flameSize'] }}:
-                          {{ order.flameSize }}
-                        </div>
-                        <div class="border-bottom-line">
-                          {{ orderLabelObj['premiumWrapping'] }}:
-                          {{ order.premiumWrapping ? 'あり' : 'なし' }}
-                        </div>
-                      </div>
+                    <div class="content">
+                      <h3>注文情報</h3>
                       <div class="order-info-row">
                         <div class="border-bottom-line">
                           {{ orderLabelObj['nameKanzi'] }}:{{ order.nameKanzi }}
@@ -89,7 +79,7 @@
                   <footer class="card-footer">
                     <div class="card-footer-item">
                       <nuxt-link
-                        to="/sample_order"
+                        to="/order_detail"
                         class="button is-fullwidth is-primary"
                         ><i class="fa fa-backward mr-1" aria-hidden="true"></i
                         >注文情報を修正する</nuxt-link
@@ -178,14 +168,18 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 // import { Client, Environment } from 'square'
 import Axios from 'axios'
 import moment from 'moment'
+import ProductCollapses from '~/components/ProductCollapses'
 moment.locale('ja')
 
 export default {
   name: 'OrderPayment',
+  components: {
+    ProductCollapses,
+  },
   data() {
     return {
       reserveDates: [
@@ -202,9 +196,14 @@ export default {
   },
   computed: {
     ...mapState({
+      cart: (state) => state.cart.cart,
       order: (state) => state.order_info.order,
       orderLabelObj: (state) => state.order_info.orderLabelObj,
       isSqPaymentLoading: (state) => state.order_payment.isSqPaymentLoading,
+    }),
+    // TODO: order.productIds, not cart
+    ...mapGetters({
+      productItemInCart: 'products/productItemInCart',
     }),
     reserveDateJp() {
       if (this.reserveDates[0] === undefined) return ''
@@ -215,9 +214,13 @@ export default {
 
       return `${f} ~ ${t}`
     },
+    cartItems() {
+      const result = this.productItemInCart(this.cart)
+      return result
+    },
   },
   mounted() {
-    // TODO: moment.js add 2 weeks
+    // TODO: bug moment.js add 2 weeks
     // const result = new Date()
     // result.setDate(result.getDate() + 2)
     // const result1 = new Date()
@@ -256,7 +259,6 @@ export default {
 
       // SqPaymentFormはhtml headからセットしてるのでeslintエラーになってしまうのでdisable
       this.paymentForm = new SqPaymentForm({ // eslint-disable-line
-        // TODO: env set
         applicationId: process.env.SQUARE_APPLICATION_ID,
         inputClass: 'sq-input',
         autoBuild: false,

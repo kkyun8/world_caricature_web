@@ -27,7 +27,14 @@ export const mutations = {
 
 export const getters = {
   productItemInCart: (state) => (cart) => {
-    return cart.map((c) => state.products.find((p) => p.id === c))
+    // deep copy
+    return cart.map((c) => {
+      if (state.products.length > 0) {
+        return JSON.parse(
+          JSON.stringify(state.products.find((p) => p.id === c))
+        )
+      }
+    })
   },
 }
 
