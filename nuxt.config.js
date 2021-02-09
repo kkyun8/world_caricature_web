@@ -52,6 +52,7 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/dotenv',
     'nuxt-fontawesome',
+    '@nuxtjs/proxy',
   ],
 
   /*
@@ -67,6 +68,12 @@ export default {
   },
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: { baseURL: 'http://localhost:3333' },
+  // TODO: url 変更
+  proxy: {
+    'http://localhost:3000/process-payment': {
+      target: 'http://localhost:4000/',
+    },
+  },
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
 
