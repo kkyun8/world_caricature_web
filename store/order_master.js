@@ -2,7 +2,7 @@ export const state = () => ({
   productHashTags: [],
   orderStatus: [],
   orderTypes: [],
-  setProductionTimes: [],
+  productionTimes: [],
 })
 
 export const mutations = {

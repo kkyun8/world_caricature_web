@@ -29,6 +29,8 @@ export const state = () => ({
     address2: '',
     comment: '',
     isSendEmail: false,
+    // TODO: set calc price
+    price: 10001,
   },
   targetOrder: [],
   order: {},
