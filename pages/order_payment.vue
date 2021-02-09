@@ -100,6 +100,13 @@
                     >決済システムSquare</a
                   >を利用し、<br />より安全な決済ができます。
                 </b-message>
+                test number 4111 1111 1111 1111 Expiration date 12/21 CVV 111
+                <b-progress
+                  type="is-primary"
+                  size="is-medium"
+                  :max="1000"
+                ></b-progress>
+                <!-- :value="indeterminate ? undefined : 100" -->
                 <div class="card">
                   <div class="card-content">
                     <div class="content">
@@ -145,7 +152,7 @@
                         outlined
                         expanded
                         @click="onGetCardNonce($event)"
-                        >決済</b-button
+                        >¥{{ order.price }} 決済</b-button
                       >
                     </div>
                   </div>
@@ -169,8 +176,6 @@
 
 <script>
 import { mapState, mapMutations, mapGetters } from 'vuex'
-// import { Client, Environment } from 'square'
-import Axios from 'axios'
 import moment from 'moment'
 import ProductCollapses from '~/components/ProductCollapses'
 moment.locale('ja')
@@ -220,13 +225,10 @@ export default {
     },
   },
   mounted() {
-    // TODO: bug moment.js add 2 weeks
-    // const result = new Date()
-    // result.setDate(result.getDate() + 2)
-    // const result1 = new Date()
-    // this.reserveDates[0] = result1
-    // this.reserveDates[1] = result
     this.setPaymentForm()
+  },
+  beforeDestroy() {
+    this.paymentForm.destroy()
   },
   methods: {
     ...mapMutations({
@@ -239,30 +241,16 @@ export default {
       }, 10 * 1000)
     },
     onGetCardNonce(event) {
-      // document.getElementById('order').value = JSON.stringify(this.order)
       event.preventDefault()
       this.paymentForm.requestCardNonce()
     },
     setPaymentForm() {
-      const uuidv4 = () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-          const r = (Math.random() * 16) | 0
-          const v = c === 'x' ? r : (r & 0x3) | 0x8
-          return v.toString(16)
-        })
-      }
-
-      // const client = new Client({
-      //   environment: Environment.Sandbox,
-      //   accessToken: process.env.SQUARE_ACCESS_TOKEN,
-      // })
-
-      // SqPaymentFormはhtml headからセットしてるのでeslintエラーになってしまうのでdisable
+      const th = this
+      // set SqPaymentForm to header
       this.paymentForm = new SqPaymentForm({ // eslint-disable-line
         applicationId: process.env.SQUARE_APPLICATION_ID,
         inputClass: 'sq-input',
         autoBuild: false,
-        // Customize the CSS for SqPaymentForm iframe elements
         inputStyles: [
           {
             fontSize: '16px',
@@ -286,92 +274,60 @@ export default {
         postalCode: false,
         callbacks: {
           async cardNonceResponseReceived(errors, nonce, cardData) {
-            // error message google transter
-            const paymentErrors = {
-              CreditCardNumber: [],
-              Cvv: [],
-              ExpirationDate: [],
-            }
+            const t = th
+            t.isLoading = true
+            const amount = t.order.price
+            const currency = 'JPY'
+            // card error
+            // TODO: set english to japanese
             if (errors) {
-              errors.forEach((error) => {
-                const c = error.message
-                if (c.includes('Credit card number')) {
-                  paymentErrors.CreditCardNumber.push(c)
-                } else if (c.includes('CVV')) {
-                  paymentErrors.Cvv.push(c)
-                } else if (c.includes('Expiration date')) {
-                  paymentErrors.ExpirationDate.push(c)
-                } else {
-                }
+              errors.forEach(function (error) {
+                console.error('  ' + error.message)
               })
-
-              // focus
-              document.getElementById(
-                'payment-errors-credit-card'
-              ).innerHTML = paymentErrors.CreditCardNumber.join(' ')
-
-              document.getElementById(
-                'payment-errors-cvv'
-              ).innerHTML = paymentErrors.Cvv.join(' ')
-
-              document.getElementById(
-                'payment-errors-expiration-date'
-              ).innerHTML = paymentErrors.ExpirationDate.join(' ')
-            } else {
-              // focus
-              document.getElementById('payment-errors-credit-card').innerHTML =
-                ''
-              document.getElementById('payment-errors-cvv').innerHTML = ''
-              document.getElementById(
-                'payment-errors-expiration-date'
-              ).innerHTML = ''
-
-              const money = {
-                amount: 200,
-                currency: 'USD',
-              }
-
-              const body = {
-                sourceId: nonce,
-                idempotencyKey: uuidv4(),
-                amountMoney: money,
-                autocomplete: true,
-              }
-              const token = process.env.SQUARE_ACCESS_TOKEN
-              const payment = Axios.create({
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: 'Bearer' + token,
-                  'Access-Control-Allow-Origin': '*',
-                },
-              })
-              await payment
-                .post('https://connect.squareupsandbox.com/v2/payments', {
-                  body,
-                })
-                .then((req) => {
-                  console.log(req)
-                })
-                .catch((err) => {
-                  console.log(err)
-                })
-
-              // payment
-              // try {
-              //   const result = await client.paymentsApi.createPayment(body)
-              //   console.log(result)
-              //   // Get more response info...
-              //   // const { statusCode, headers } = httpResponse;
-              // } catch (error) {
-              //   console.log(error)
-              //   // const { statusCode, headers } = error;
-              // }
+              t.isLoading = false
+              return
             }
+
+            await fetch('/process-payment', {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                nonce,
+                amount,
+                currency,
+              }),
+            })
+              .catch((err) => {
+                console.log(err)
+              })
+              .then((response) => {
+                if (!response.ok) {
+                  return response
+                    .text()
+                    .then((errorInfo) => Promise.reject(errorInfo))
+                }
+                return response.text()
+              })
+              .then((data) => {
+                console.log(data)
+                t.$router.push({
+                  path: 'payment_complete',
+                  query: { id: 1 },
+                })
+              })
+              .catch((err) => {
+                console.log(err)
+              })
+              .finally(() => {
+                t.isLoading = false
+              })
           },
         },
       })
       this.paymentForm.build()
-      // this.showPaymentFormFlg = false
     },
   },
 }
