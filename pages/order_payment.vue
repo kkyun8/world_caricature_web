@@ -106,7 +106,6 @@
                   size="is-medium"
                   :max="1000"
                 ></b-progress>
-                <!-- :value="indeterminate ? undefined : 100" -->
                 <div class="card">
                   <div class="card-content">
                     <div class="content">
@@ -175,7 +174,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapGetters } from 'vuex'
+import { mapState, mapMutations, mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
 import ProductCollapses from '~/components/ProductCollapses'
 moment.locale('ja')
@@ -231,7 +230,9 @@ export default {
     this.paymentForm.destroy()
   },
   methods: {
+    ...mapActions('order_info', ['createOrder']),
     ...mapMutations({
+      setOrder: 'order_info/setOrder',
       setIsSqPaymentLoading: 'order_payment/setIsSqPaymentLoading',
     }),
     openLoading() {
@@ -278,6 +279,7 @@ export default {
             t.isLoading = true
             const amount = t.order.price
             const currency = 'JPY'
+            const order = t.order
             // card error
             // TODO: set english to japanese
             if (errors) {
@@ -298,6 +300,7 @@ export default {
                 nonce,
                 amount,
                 currency,
+                order,
               }),
             })
               .catch((err) => {

@@ -45,15 +45,7 @@
       </template>
     </b-navbar>
     <nuxt />
-    <footer class="footer">
-      <div class="content has-text-centered">
-        <p>
-          <strong>ワルド似顔絵</strong>
-          <a href="#">Jeremy Thomas</a>. The source code is licensed
-          <a href="#">MIT</a>. The website content is licensed
-        </p>
-      </div>
-    </footer>
+    <Footer />
     <b-loading
       v-model="isLoading"
       :is-full-page="false"
@@ -134,7 +126,11 @@
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
+import Footer from '~/components/layouts/Footer'
 export default {
+  components: {
+    Footer,
+  },
   data() {
     return {
       isCartModalActive: false,
