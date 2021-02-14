@@ -76,9 +76,9 @@
             </div>
           </div>
           <b-button
-            :loading="isImageUploadLoading"
             type="is-primary"
             outlined
+            :loading="isCheckUploadImagesLoading || isImageUploadLoading"
             @click="checkUploadImages"
             >添付写真をチェック</b-button
           >
@@ -94,13 +94,14 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   name: 'OrderPictureAddForm',
-  layout: 'check_key',
+  layout: 'only_footer',
   data() {
     return {
       dropFiles: [],
       isImageUploadLoading: false,
       faceDetectionNet: null,
       faceDetectionOptions: null,
+      isCheckUploadImagesLoading: false,
     }
   },
   computed: {
@@ -127,6 +128,7 @@ export default {
       this.dropFiles.splice(index, 1)
     },
     async checkUploadImages() {
+      this.isCheckUploadImagesLoading = true
       const formdata = new FormData()
 
       for (const file of this.dropFiles) {
@@ -140,6 +142,15 @@ export default {
         method: 'POST',
         body: formdata,
       })
+        // TODO: 正常終了後遷移
+        .then(() =>
+          this.$router.push({
+            path: 'order_picture_add_complete',
+          })
+        )
+        .finally(() => {
+          this.isCheckUploadImagesLoading = false
+        })
     },
   },
 }
