@@ -5,7 +5,13 @@ const {
   SQUARE_LOCATION_ID,
   CART_MAX_COUNT,
   CART_LOCAL_STORAGE_KEY,
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
+  AWS_DEFAULT_REGION,
+  AWS_BUCKET,
+  AWS_URL,
 } = process.env
+
 export default {
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -33,7 +39,11 @@ export default {
   css: [],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: ['@/plugins/common-mixin-plugin.js', '@/plugins/axios.js'],
+  plugins: [
+    '@/plugins/common-mixin-plugin.js',
+    '@/plugins/axios.js',
+    '@/plugins/aws.js',
+  ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
@@ -86,5 +96,10 @@ export default {
     SQUARE_LOCATION_ID,
     CART_MAX_COUNT,
     CART_LOCAL_STORAGE_KEY,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_DEFAULT_REGION,
+    AWS_BUCKET,
+    AWS_URL,
   },
 }
