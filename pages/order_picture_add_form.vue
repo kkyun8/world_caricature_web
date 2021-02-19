@@ -1,6 +1,6 @@
 <template>
   <div class="container is-fullhd">
-    <section v-if="isActivePictureUrlKey">
+    <section v-if="isActivePictureAddFormKey">
       <div class="content box mt-6 mb-6">
         <h2>写真アップロードフォーム</h2>
         <b-message type="is-info">
@@ -8,24 +8,29 @@
           <p>
             注文情報は確定されてます。住所などが間違ってる場合ラインまたはメールでご連絡ください。
           </p>
+          <p>
+            <strong
+              >アップロードされた写真はクラウド環境に３ヶ月間保存され、３ヶ月後には自動削除されます。</strong
+            >
+          </p>
         </b-message>
         <h4>注文情報</h4>
         <div class="columns">
           <div class="column">
             <b-field label="名前（漢字）">
-              <b-input disabled></b-input>
+              <b-input v-model="t.nameKanzi" disabled></b-input>
             </b-field>
           </div>
           <div class="column">
             <b-field label="名前（フリガナ）">
-              <b-input disabled></b-input>
+              <b-input v-model="t.nameFurigana" disabled></b-input>
             </b-field>
           </div>
         </div>
         <div class="columns">
           <div class="column">
             <b-field label="住所">
-              <b-input disabled></b-input>
+              <b-input v-model="t.address1" disabled></b-input>
             </b-field>
           </div>
         </div>
@@ -75,22 +80,118 @@
               </div>
             </div>
           </div>
+          <!-- TODO: get aws-s3 test file
+          <b-button type="is-primary" outlined @click="getOrderObjects"
+            >getOrderObjects</b-button
+          >-->
           <b-button
             type="is-primary"
             outlined
             :loading="isCheckUploadImagesLoading || isImageUploadLoading"
             @click="checkUploadImages"
-            >添付写真をチェック</b-button
+            >添付写真から顔取得</b-button
           >
+          <!-- TODO: best img size? -->
+          <div v-if="uploadedFiles.length > 0" class="box m-3">
+            <p class="is-size-4">アップロード写真から顔を選択してください。</p>
+            <div
+              v-for="(o, oidx) in t.productOptions"
+              :key="`po-${oidx}`"
+              class="box"
+            >
+              作品名：{{ o.title }} 人数：{{ o.number_of_people }}名
+              <b-button @click="openProductImgModal(o.id)"
+                >この商品に描いて欲しい顔選択</b-button
+              >
+              <template v-for="(pi, pidx) in productImgs[o.id]">
+                <div :key="`pi-${o.id}-${pidx}`" class="column is-4">
+                  <img class="aws-images" :src="pi" width="100" height="150" />
+                  <font-awesome-icon
+                    icon="times-circle"
+                    class="image-close"
+                    @click="deleteProductImg(pi, o.id)"
+                  />
+                </div>
+              </template>
+            </div>
+
+            <b-button
+              type="is-primary"
+              outlined
+              :loading="isCheckUploadImagesLoading || isImageUploadLoading"
+              @click="updateOrderPicture"
+              >写真を登録する</b-button
+            >
+            <div class="columns is-mobile">
+              <template v-for="uf in uploadedFiles">
+                <template v-if="uf.indexOf('origin') > 0">
+                  <div :key="`uf-${uf}`" class="column is-8">
+                    <img
+                      class="aws-images"
+                      :src="uf"
+                      width="250"
+                      height="200"
+                    />
+                  </div>
+                </template>
+                <template v-else>
+                  <div :key="uf" class="column is-4">
+                    <img
+                      class="aws-images"
+                      :src="uf"
+                      width="100"
+                      height="150"
+                    />
+                  </div>
+                </template>
+              </template>
+            </div>
+          </div>
         </div>
       </div>
+      <b-modal v-model="isProductImgAddModalActive" :width="640" scroll="keep">
+        <div class="card">
+          <div class="card-content">
+            <template v-for="uf in uploadedFiles">
+              <template v-if="uf.indexOf('face') > 0">
+                <div :key="uf" class="column is-4">
+                  <div
+                    :class="{
+                      'disabled-aws-images': isIncludesProductImgs(uf),
+                    }"
+                    @click.stop="addProductImg(uf)"
+                  >
+                    <img
+                      class="aws-images"
+                      :src="uf"
+                      width="100"
+                      height="150"
+                    />
+                    <font-awesome-icon
+                      v-if="isIncludesProductImgs(uf)"
+                      icon="times-circle"
+                      class="image-close"
+                      @click.stop="deleteProductImg(uf, 0)"
+                    />
+                  </div>
+                </div>
+              </template>
+            </template>
+          </div>
+          <footer class="card-footer">
+            <a class="card-footer-item" @click="closeProductImgModal">
+              閉じる
+            </a>
+          </footer>
+        </div>
+      </b-modal>
     </section>
     <div v-else>無効なKeyです。トップ画面に移動します。</div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'OrderPictureAddForm',
@@ -98,39 +199,138 @@ export default {
   data() {
     return {
       dropFiles: [],
+      uploadedFiles: [],
+      faceFiles: [],
       isImageUploadLoading: false,
       faceDetectionNet: null,
       faceDetectionOptions: null,
       isCheckUploadImagesLoading: false,
+      isProductImgAddModalActive: false,
+      productImgs: {},
+      productImgModalTargetId: 0,
     }
   },
   computed: {
     ...mapState({
-      isActivePictureUrlKey: (state) => state.order_info.isActivePictureUrlKey,
+      isActivePictureAddFormKey: (state) =>
+        state.order_info.isActivePictureAddFormKey,
+      // TODO: mock
       targetOrder: (state) => state.order_info.targetOrder,
     }),
+    // TODO: mock
+    t() {
+      const mock = {
+        nameKanzi: '',
+        nameFurigana: '',
+        address1: '',
+        productOptions: [],
+      }
+
+      if (Array.isArray(this.targetOrder)) {
+        if (this.targetOrder.length === 0) {
+          return mock
+        }
+        return this.targetOrder[0]
+      } else {
+        return mock
+      }
+    },
+    orderNumber() {
+      // TODO: mock
+      if (Array.isArray(this.targetOrder)) {
+        if (this.targetOrder.length === 0) {
+          return ''
+        }
+        return this.targetOrder[0].orderNumber
+      } else {
+        return ''
+      }
+    },
     maxFileLength() {
-      // TODO: return this.targetOrder.productOptions
+      // TODO: mock
       return 2
     },
+  },
+  watch: {
+    isActivePictureAddFormKey(newVal) {
+      if (newVal != null && !newVal && this.targetOrder.length === 0) {
+        setTimeout(() => {
+          this.$router.push({
+            path: '/',
+          })
+        }, 3000)
+      }
+    },
+    targetOrder(newVal) {
+      if (newVal) {
+        // TODO: mock
+        this.productImgs = newVal[0].productOptions.reduce((a, p) => {
+          a[p.id] = []
+          return a
+        }, {})
+      }
+    },
+  },
+  beforeDestroy() {
+    this.setTargetOrder(null)
   },
   created() {
     // check key
     const readOrderPictureUrlKey = this.readOrderPictureUrlKey({
       key: this.$route.query.key,
     })
-    this.readAllApi([readOrderPictureUrlKey])
+    const readOrder = this.readOrder({
+      // TODO: key param
+      // orderNumber: '',
+      // email: '',
+    })
+    this.readAllApi([readOrderPictureUrlKey, readOrder])
   },
-
   methods: {
-    ...mapActions('order_info', ['readOrderPictureUrlKey', 'readOrder']),
+    ...mapActions('order_info', ['readOrder']),
+    ...mapActions('order_info', [
+      'readOrderPictureUrlKey',
+      'readOrder',
+      'updateOrder',
+    ]),
+    ...mapMutations({
+      setTargetOrder: 'order_info/setTargetOrder',
+    }),
     deleteDropFile(index) {
       this.dropFiles.splice(index, 1)
+    },
+    openProductImgModal(productId) {
+      this.productImgModalTargetId = productId
+      this.isProductImgAddModalActive = true
+    },
+    closeProductImgModal() {
+      this.productImgModalTargetId = 0
+      this.isProductImgAddModalActive = false
+    },
+    addProductImg(url) {
+      if (
+        this.productImgModalTargetId !== 0 &&
+        !this.isIncludesProductImgs(url, this.productImgModalTargetId)
+      ) {
+        this.productImgs[this.productImgModalTargetId].push(url)
+      }
+    },
+    deleteProductImg(url, productId) {
+      const targetId =
+        productId === 0 ? this.productImgModalTargetId : productId
+      return this.productImgs[targetId].splice(url, 1)
+    },
+    isIncludesProductImgs(url) {
+      if (this.productImgModalTargetId === 0) return
+      return this.productImgs[this.productImgModalTargetId].includes(url)
     },
     async checkUploadImages() {
       this.isCheckUploadImagesLoading = true
       const formdata = new FormData()
 
+      // TODO: order_number
+      // formdata.append('orderNumber', this.targetOrder.orderNumber)
+      formdata.append('orderNumber', this.orderNumber)
       for (const file of this.dropFiles) {
         if (!/\.(jpe?g|png|gif)$/i.test(file.name))
           // TODO: file check
@@ -142,18 +342,60 @@ export default {
         method: 'POST',
         body: formdata,
       })
-        // TODO: 正常終了後遷移
-        .then(() =>
-          this.$router.push({
-            path: 'order_picture_add_complete',
-          })
-        )
+        .then((res) => {
+          console.log(res)
+          this.getOrderObjects()
+        })
         .finally(() => {
           this.isCheckUploadImagesLoading = false
         })
+    },
+    async getOrderObjects() {
+      this.uploadedFiles = []
+      const params = {
+        Bucket: this.$aws_bucket(),
+        Prefix: this.orderNumber,
+      }
+      const listObjectsPromise = await this.$aws_s3()
+        .listObjectsV2(params)
+        .promise()
+
+      if (listObjectsPromise.Contents.length === 0) return false
+      const url = this.$aws_url()
+
+      this.uploadedFiles = listObjectsPromise.Contents.map(
+        (c) => `${url}/${listObjectsPromise.Name}/${c.Key}`
+      )
+    },
+    updateOrderPicture() {
+      // TODO: status value set
+      const orderStatus = 3
+      const orderNumber = this.orderNumber
+      // TODO: mock
+      const updateOrder = this.updateOrder({ orderNumber, orderStatus })
+
+      this.readAllApi([updateOrder]).then(() => {
+        this.$router.push({
+          path: 'order_picture_add_complete',
+        })
+      })
     },
   },
 }
 </script>
 
-<style></style>
+<style>
+.aws-face-div {
+  /* float: left; */
+  margin: auto;
+}
+.aws-face-images {
+  border: 1px solid black;
+}
+.disabled-aws-images {
+  opacity: 0.5;
+}
+.image-close {
+  color: blue;
+}
+</style>

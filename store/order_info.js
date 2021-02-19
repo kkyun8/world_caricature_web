@@ -29,11 +29,20 @@ export const state = () => ({
     address2: '',
     comment: '',
     isSendEmail: false,
+    isSendLine: false,
+    pictureUrlKey: '',
+    hasPictures: false,
     // TODO: set calc price
     price: 10001,
+    idempotencyKey: '',
+    paymentStatus: 0,
+    paymentOrderId: '',
+    paymentSourceType: '',
   },
+  // TODO: set calc price
   targetOrder: [],
   order: {},
+  isActivePictureAddFormKey: null,
 })
 
 export const mutations = {
@@ -43,6 +52,9 @@ export const mutations = {
   setOrder(state, data) {
     state.order = data
   },
+  setIsActivePictureUrlKey(state, data) {
+    state.isActivePictureAddFormKey = data
+  },
 }
 
 export const actions = {
@@ -51,6 +63,24 @@ export const actions = {
     const result = await this.$axios.$get('/orders', { params }).then((res) => {
       commit('setTargetOrder', res)
     })
+    return result
+  },
+  async createOrder({ commit, state }) {
+    // TODO: mock url
+    const result = await this.$axios.$post('/orders', state.order)
+    return result
+  },
+  async readOrderPictureUrlKey({ commit }, { params }) {
+    // TODO: mock url
+    const result = await this.$axios.$get('/orders', { params })
+    // TODO: set param
+    commit('setIsActivePictureUrlKey', true)
+    // commit('setTargetOrder', res)
+    return result
+  },
+  async updateOrder({ commit }, { params }) {
+    // TODO: mock url
+    const result = await this.$axios.$put('/orders', { params })
     return result
   },
 }
