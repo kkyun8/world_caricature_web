@@ -10,6 +10,8 @@ const {
   AWS_DEFAULT_REGION,
   AWS_BUCKET,
   AWS_URL,
+  LINE_CHANNEL_ACCESS_TOKEN,
+  LINE_CHANNEL_SECRET,
 } = process.env
 
 export default {
@@ -101,5 +103,7 @@ export default {
     AWS_DEFAULT_REGION,
     AWS_BUCKET,
     AWS_URL,
+    LINE_CHANNEL_ACCESS_TOKEN,
+    LINE_CHANNEL_SECRET,
   },
 }
