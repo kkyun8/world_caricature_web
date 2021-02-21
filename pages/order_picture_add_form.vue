@@ -15,25 +15,27 @@
           </p>
         </b-message>
         <h4>注文情報</h4>
-        <div class="columns">
-          <div class="column">
-            <b-field label="名前（漢字）">
-              <b-input v-model="t.nameKanzi" disabled></b-input>
-            </b-field>
+        <template v-if="targetOrder">
+          <div class="columns">
+            <div class="column">
+              <b-field label="名前（漢字）">
+                <b-input v-model="targetOrder.nameKanzi" disabled></b-input>
+              </b-field>
+            </div>
+            <div class="column">
+              <b-field label="名前（フリガナ）">
+                <b-input v-model="targetOrder.nameFurigana" disabled></b-input>
+              </b-field>
+            </div>
           </div>
-          <div class="column">
-            <b-field label="名前（フリガナ）">
-              <b-input v-model="t.nameFurigana" disabled></b-input>
-            </b-field>
+          <div class="columns">
+            <div class="column">
+              <b-field label="住所">
+                <b-input v-model="targetOrder.address1" disabled></b-input>
+              </b-field>
+            </div>
           </div>
-        </div>
-        <div class="columns">
-          <div class="column">
-            <b-field label="住所">
-              <b-input v-model="t.address1" disabled></b-input>
-            </b-field>
-          </div>
-        </div>
+        </template>
         <!-- TODO: order info{{ targetOrder }} -->
         <div class="has-text-centered">
           <b-field>
@@ -48,10 +50,11 @@
                   </p>
                   <p>写真ファイルは一人２枚までです。</p>
                   <p>
-                    注文に必要な人数は<strong>{{ maxFileLength }}名</strong
+                    注文に必要な人数は<strong
+                      >{{ totalNumberOfPeople }}名</strong
                     >なので、
-                    <strong>総{{ maxFileLength * 2 }}枚</strong
-                    >アップロードしてください。
+                    <strong>総{{ maxFileLength }}ファイル</strong
+                    >アップロード可能です。
                   </p>
                 </div>
               </section>
@@ -80,10 +83,6 @@
               </div>
             </div>
           </div>
-          <!-- TODO: get aws-s3 test file
-          <b-button type="is-primary" outlined @click="getOrderObjects"
-            >getOrderObjects</b-button
-          >-->
           <b-button
             type="is-primary"
             outlined
@@ -95,7 +94,7 @@
           <div v-if="uploadedFiles.length > 0" class="box m-3">
             <p class="is-size-4">アップロード写真から顔を選択してください。</p>
             <div
-              v-for="(o, oidx) in t.productOptions"
+              v-for="(o, oidx) in targetOrder.productOptions"
               :key="`po-${oidx}`"
               class="box"
             >
@@ -103,16 +102,23 @@
               <b-button @click="openProductImgModal(o.id)"
                 >この商品に描いて欲しい顔選択</b-button
               >
-              <template v-for="(pi, pidx) in productImgs[o.id]">
-                <div :key="`pi-${o.id}-${pidx}`" class="column is-4">
-                  <img class="aws-images" :src="pi" width="100" height="150" />
-                  <font-awesome-icon
-                    icon="times-circle"
-                    class="image-close"
-                    @click="deleteProductImg(pi, o.id)"
-                  />
-                </div>
-              </template>
+              <div class="columns">
+                <template v-for="(pi, pidx) in productImgs[o.id]">
+                  <div :key="`pi-${o.id}-${pidx}`" class="column">
+                    <img
+                      class="aws-images"
+                      :src="pi"
+                      width="100"
+                      height="150"
+                    />
+                    <font-awesome-icon
+                      icon="times-circle"
+                      class="image-close"
+                      @click="deleteProductImg(pi, o.id)"
+                    />
+                  </div>
+                </template>
+              </div>
             </div>
 
             <b-button
@@ -121,26 +127,16 @@
               :loading="isCheckUploadImagesLoading || isImageUploadLoading"
               @click="updateOrderPicture"
               >写真を登録する</b-button
-            >
+            >※写真登録後、払い戻しはできません。
             <div class="columns is-mobile">
               <template v-for="uf in uploadedFiles">
                 <template v-if="uf.indexOf('origin') > 0">
-                  <div :key="`uf-${uf}`" class="column is-8">
+                  <div :key="`uf-${uf}`" class="column">
                     <img
                       class="aws-images"
                       :src="uf"
                       width="250"
                       height="200"
-                    />
-                  </div>
-                </template>
-                <template v-else>
-                  <div :key="uf" class="column is-4">
-                    <img
-                      class="aws-images"
-                      :src="uf"
-                      width="100"
-                      height="150"
                     />
                   </div>
                 </template>
@@ -217,43 +213,31 @@ export default {
       // TODO: mock
       targetOrder: (state) => state.order_info.targetOrder,
     }),
-    // TODO: mock
-    t() {
-      const mock = {
-        nameKanzi: '',
-        nameFurigana: '',
-        address1: '',
-        productOptions: [],
-      }
-
-      if (Array.isArray(this.targetOrder)) {
-        if (this.targetOrder.length === 0) {
-          return mock
-        }
-        return this.targetOrder[0]
-      } else {
-        return mock
-      }
-    },
     orderNumber() {
       // TODO: mock
-      if (Array.isArray(this.targetOrder)) {
-        if (this.targetOrder.length === 0) {
-          return ''
-        }
-        return this.targetOrder[0].orderNumber
-      } else {
-        return ''
+      if (this.targetOrder) {
+        return this.targetOrder.orderNumber
       }
+      return ''
+    },
+    totalNumberOfPeople() {
+      if (!this.targetOrder) {
+        return 0
+      }
+      const result = this.targetOrder.productOptions.reduce((a, p) => {
+        a = a + p.number_of_people
+        return a
+      }, 0)
+      return result
     },
     maxFileLength() {
-      // TODO: mock
-      return 2
+      return this.totalNumberOfPeople * 2
     },
   },
   watch: {
     isActivePictureAddFormKey(newVal) {
-      if (newVal != null && !newVal && this.targetOrder.length === 0) {
+      // indexに自動遷移
+      if (newVal != null && !newVal && !this.targetOrder) {
         setTimeout(() => {
           this.$router.push({
             path: '/',
@@ -264,7 +248,7 @@ export default {
     targetOrder(newVal) {
       if (newVal) {
         // TODO: mock
-        this.productImgs = newVal[0].productOptions.reduce((a, p) => {
+        this.productImgs = newVal.productOptions.reduce((a, p) => {
           a[p.id] = []
           return a
         }, {})
@@ -280,7 +264,7 @@ export default {
       key: this.$route.query.key,
     })
     const readOrder = this.readOrder({
-      // TODO: key param
+      // TODO: PictureUrlKey param
       // orderNumber: '',
       // email: '',
     })
@@ -369,15 +353,18 @@ export default {
     },
     updateOrderPicture() {
       // TODO: status value set
-      const orderStatus = 3
-      const orderNumber = this.orderNumber
+      // const orderStatus = 3
+      // const orderNumber = this.orderNumber
       // TODO: mock
-      const updateOrder = this.updateOrder({ orderNumber, orderStatus })
+      // const updateOrder = this.updateOrder({ orderNumber, orderStatus })
 
-      this.readAllApi([updateOrder]).then(() => {
-        this.$router.push({
-          path: 'order_picture_add_complete',
-        })
+      // this.readAllApi([updateOrder]).then(() => {
+      //   this.$router.push({
+      //     path: 'order_picture_add_complete',
+      //   })
+      // })
+      this.$router.push({
+        path: 'order_picture_add_complete',
       })
     },
   },

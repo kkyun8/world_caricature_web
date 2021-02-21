@@ -40,7 +40,7 @@ export const state = () => ({
     paymentSourceType: '',
   },
   // TODO: set calc price
-  targetOrder: [],
+  targetOrder: null,
   order: {},
   isActivePictureAddFormKey: null,
 })
@@ -60,7 +60,8 @@ export const mutations = {
 export const actions = {
   async readOrder({ commit }, { params }) {
     // TODO: mock url
-    const result = await this.$axios.$get('/orders', { params }).then((res) => {
+    // set param
+    const result = await this.$axios.$get('/orders/1').then((res) => {
       commit('setTargetOrder', res)
     })
     return result

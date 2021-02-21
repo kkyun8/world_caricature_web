@@ -457,8 +457,8 @@
     {
       "id":2,
       "productOptions": [
-        {"id":1, "title":"スタート", "number_of_people":2, "flameSize":"M", "premiumWrapping":false },
-        {"id":2, "title":"スタート", "number_of_people":3, "flameSize":"M", "premiumWrapping":false }
+        {"id":1, "title":"スタート1", "number_of_people":2, "flameSize":"M", "premiumWrapping":false },
+        {"id":2, "title":"スタート2", "number_of_people":3, "flameSize":"M", "premiumWrapping":false }
       ],
       "orderNumber": "orderNumber",
       "status": 1,
