@@ -1,23 +1,19 @@
 <template>
   <div class="payment-complete">
-    payment-complete
-
-    <b-modal
-      v-model="isNoticeModalActive"
-      has-modal-card
-      aria-modal
-      :width="640"
-    >
-      <div class="card">
-        <div class="card-content">
-          まだ注文が完了しておりません！<br />
-          メールまたはラインで顔写真を送信しましょう！
-        </div>
+    <section class="section">
+      <div class="container has-text-centered">
+        <h2 class="title">注文ありがとうございます！</h2>
+        <div class="block"></div>
+        <p>
+          決済が確認され、注文情報に登録されてるメールにURLを送信しました。
+          メールをご確認ください。
+        </p>
+        <p>
+          メールのURLに接続し、<ins>似顔絵に必要な写真を添付してください。</ins>
+        </p>
+        <p>写真を添付されてない場合、<ins>１ヶ月後返金されます。</ins></p>
       </div>
-      <!-- <template #default="props">
-        <modal-form v-bind="formProps" @close="props.close"></modal-form>
-      </template> -->
-    </b-modal>
+    </section>
   </div>
 </template>
 
