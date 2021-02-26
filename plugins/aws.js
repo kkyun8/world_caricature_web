@@ -5,10 +5,13 @@ const region = process.env.AWS_DEFAULT_REGION
 const bucket = process.env.AWS_BUCKET
 const url = process.env.AWS_URL
 AWS.config.update({ region })
+
 export const s3 = new AWS.S3({ accessKeyId, secretAccessKey })
+export const ddb = new AWS.DynamoDB({ accessKeyId, secretAccessKey })
 
 export default ({ app }, inject) => {
   inject('aws_s3', () => s3)
   inject('aws_bucket', () => bucket)
   inject('aws_url', () => url)
+  inject('aws_ddb', () => ddb)
 }
