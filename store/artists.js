@@ -13,18 +13,28 @@ export const mutations = {
 }
 
 export const actions = {
-  async readArtists({ commit }) {
-    const result = await this.$axios.$get('/artists').then((res) => {
-      commit('setArtists', res)
+  async scanArtists({ commit }) {
+    const params = {
+      TableName: 'artists',
+    }
+    const result = this.$aws_ddb().scan(params).promise()
+    await result.then((res) => {
+      const artists = res.Items.filter((i) => !i.is_delete.BOOL)
+      commit('setArtists', artists)
     })
-    return result
   },
-  async readArtist({ commit }, params) {
-    const result = await this.$axios
-      .$get(`/artists/${params.id}`)
-      .then((res) => {
-        commit('setArtist', res)
-      })
+  // TODO: cors policy error
+  async getArtistItem({ commit }, values) {
+    const params = {
+      TableName: 'artists',
+      Key: {
+        artist_nickname: { S: values.artistNickname },
+      },
+    }
+    const result = this.$aws_ddb().getItem(params).promise()
+    await result.then((res) => {
+      commit('setArtist', res.Item)
+    })
     return result
   },
 }

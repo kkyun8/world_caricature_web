@@ -1,19 +1,6 @@
 export const state = () => ({
   products: [],
-  product: {
-    id: 0,
-    title: '',
-    order_type: [0],
-    number_of_people: 0,
-    price: 0,
-    production_time: 0,
-    information: '',
-    artist_id: 0,
-    artist_comment: '',
-    delflg: false,
-    created_at: '',
-    updated_at: '',
-  },
+  product: {},
 })
 
 export const mutations = {
@@ -31,7 +18,7 @@ export const getters = {
     return cart.map((c) => {
       if (state.products.length > 0) {
         return JSON.parse(
-          JSON.stringify(state.products.find((p) => p.id === c))
+          JSON.stringify(state.products.find((p) => p.id.S === c.S))
         )
       }
     })
@@ -39,9 +26,27 @@ export const getters = {
 }
 
 export const actions = {
-  async readProducts({ commit }) {
-    const result = await this.$axios.$get('/products').then((res) => {
-      commit('setProducts', res)
+  async scanProducts({ commit }) {
+    const params = {
+      TableName: 'products',
+    }
+    const result = this.$aws_ddb().scan(params).promise()
+    await result.then((res) => {
+      const products = res.Items.filter((i) => !i.is_delete.BOOL)
+      commit('setProducts', products)
+    })
+    return result
+  },
+  async getProductItem({ commit }, values) {
+    const params = {
+      TableName: 'products',
+      Key: {
+        id: { S: values.id },
+      },
+    }
+    const result = this.$aws_ddb().getItem(params).promise()
+    await result.then((res) => {
+      commit('setProduct', res.Item)
     })
     return result
   },

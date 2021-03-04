@@ -7,7 +7,14 @@ const url = process.env.AWS_URL
 AWS.config.update({ region })
 
 export const s3 = new AWS.S3({ accessKeyId, secretAccessKey })
-export const ddb = new AWS.DynamoDB({ accessKeyId, secretAccessKey })
+
+export const ddb = new AWS.DynamoDB({
+  // local
+  endpoint: 'http://localhost:8000',
+  region: 'ap-northeast-1',
+  accessKeyId,
+  secretAccessKey,
+})
 
 export default ({ app }, inject) => {
   inject('aws_s3', () => s3)

@@ -21,32 +21,25 @@ export const mutations = {
 }
 
 export const actions = {
-  async readProductHashTag({ commit }) {
-    // TODO: mock url
-    const result = await this.$axios.$get('/product_hash_tags').then((res) => {
-      commit('setProductHashTags', res)
+  async scanOrderItemLabels({ commit }) {
+    const params = {
+      TableName: 'order_item_labels',
+    }
+    const result = this.$aws_ddb().scan(params).promise()
+    await result.then((res) => {
+      const orderStatus = res.Items.filter(
+        (i) => i.item_id.S === 'order_status'
+      )
+      const orderTypes = res.Items.filter((i) => i.item_id.S === 'order_types')
+      const productionTimes = res.Items.filter(
+        (i) => i.item_id.S === 'production_times'
+      )
+
+      commit('setOrderStatus', orderStatus)
+      commit('setOrderTypes', orderTypes)
+      commit('setProductionTimes', productionTimes)
     })
     return result
   },
-  async readOrderStatus({ commit }) {
-    // TODO: mock url
-    const result = await this.$axios.$get('/order_status').then((res) => {
-      commit('setOrderStatus', res)
-    })
-    return result
-  },
-  async readOrderTypes({ commit }) {
-    // TODO: mock url
-    const result = await this.$axios.$get('/order_types').then((res) => {
-      commit('setOrderTypes', res)
-    })
-    return result
-  },
-  async readProductionTimes({ commit }) {
-    // TODO: mock url
-    const result = await this.$axios.$get('/production_times').then((res) => {
-      commit('setProductionTimes', res)
-    })
-    return result
-  },
+  // TODO: scanHashTags
 }
