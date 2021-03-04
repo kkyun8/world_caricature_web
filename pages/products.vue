@@ -124,39 +124,28 @@ export default {
 
       const values = [...this.products]
 
-      const ots = [...this.orderTypes]
-      const pts = [...this.productionTimes]
-
       let result = values
         .sort((a, b) => {
+          if (!a.sort || !b.sort) {
+            return a.sort ? -1 : 1
+          }
+
           if (sortType === 'expensive') {
             return b.price - a.price
           } else if (sortType === 'inexpensive') {
             return a.price - b.price
-          } else if (a.sort[sortType] && b.sort[sortType]) {
-            return a.sort[sortType] - b.sort[sortType]
+          } else if (a.sort.M[sortType] && b.sort.M[sortType]) {
+            return a.sort.M[sortType] - b.sort.M[sortType]
           } else {
-            if (a.sort[sortType]) {
+            if (a.sort.M[sortType]) {
               return -1
             }
-            if (b.sort[sortType]) {
+            if (b.sort.M[sortType]) {
               return 1
             }
           }
         })
         .filter((e, i) => start < i + 1 && i + 1 <= end)
-        .map((i) => {
-          i.order_type_name = ots
-            .filter((o) => i.order_type.includes(o.id))
-            .map((o) => o.name)
-            .join(' ')
-
-          const productionTimeData = pts.find((t) => i.production_time === t.id)
-          i.production_time_name = productionTimeData
-            ? productionTimeData.name
-            : ''
-          return i
-        })
 
       if (this.tags.length > 0) {
         const hashs = this.tags.map((t) => t.hash)

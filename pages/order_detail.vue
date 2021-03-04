@@ -250,7 +250,7 @@ export default {
     },
     productPrice() {
       const result = this.cartItems.reduce((a, i) => {
-        return a + i.price
+        return a + Number(i.price.N)
       }, 0)
       return result
     },

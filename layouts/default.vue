@@ -85,17 +85,17 @@
                 {{ props.row.no }}
               </b-table-column>
               <b-table-column v-slot="props" field="title" label="タイトル">
-                {{ props.row.title }}
+                {{ props.row.title.S }}
               </b-table-column>
               <b-table-column
                 v-slot="props"
                 field="number_of_people"
                 label="人数"
               >
-                {{ props.row.number_of_people }}名
+                {{ props.row.number_of_people.N }}名
               </b-table-column>
               <b-table-column v-slot="props" field="price" label="値段">
-                {{ props.row.price }}円
+                {{ props.row.price.N }}円
               </b-table-column>
               <template>
                 <div class="has-text-right">
@@ -166,7 +166,7 @@ export default {
       if (this.cartItems) {
         price = this.cartItems.reduce((a, i) => {
           if (i) {
-            a = a + i.price
+            a = a + i.price.N
             return a
           }
         }, 0)
@@ -176,32 +176,16 @@ export default {
   },
   created() {
     this.isLoading = true
-    const readProductHashTags = this.readProductHashTag()
-    const readOrderStatus = this.readOrderStatus()
-    const readOrderTypes = this.readOrderTypes()
-    const readProductionTimes = this.readProductionTimes()
-    const readProducts = this.readProducts()
-
-    this.readAllApi([
-      readProductHashTags,
-      readOrderStatus,
-      readOrderTypes,
-      readProductionTimes,
-      readProducts,
-    ])
+    const scanProducts = this.scanProducts()
+    const scanOrderItemLabels = this.scanOrderItemLabels()
+    this.readAllApi([scanProducts, scanOrderItemLabels])
   },
   mounted() {
     this.checkLocalStorage()
   },
   methods: {
-    ...mapActions('artists', ['readArtist']),
-    ...mapActions('products', ['readProducts']),
-    ...mapActions('order_master', [
-      'readProductHashTag',
-      'readOrderStatus',
-      'readOrderTypes',
-      'readProductionTimes',
-    ]),
+    ...mapActions('products', ['scanProducts']),
+    ...mapActions('order_master', ['scanOrderItemLabels']),
     ...mapMutations({
       setCart: 'cart/setCart',
     }),

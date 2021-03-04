@@ -11,8 +11,8 @@
       </div>
       <div class="card-content">
         <div class="content">
-          <p class="title is-5">{{ product.title }}</p>
-          <p class="subtitle is-6 mt-1">¥{{ product.price }}</p>
+          <p class="title is-5">{{ product.title.S }}</p>
+          <p class="subtitle is-6 mt-1">¥{{ product.price.N }}</p>
         </div>
         <div class="buttons">
           <b-button
@@ -42,7 +42,7 @@ export default {
     clickSampleDetail() {
       this.$router.push({
         path: 'product_detail',
-        query: { id: this.product.id },
+        query: { id: this.product.id.S },
       })
     },
   },

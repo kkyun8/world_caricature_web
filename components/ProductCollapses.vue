@@ -15,7 +15,7 @@
           role="button"
           aria-controls="contentIdForA11y3"
         >
-          <p v-if="product" class="card-header-title">{{ product.title }}</p>
+          <p v-if="product" class="card-header-title">{{ product.title.S }}</p>
           <!-- TODO: メッセージデザイン -->
           <p class="card-header-title">
             クリックして詳細情報を設定してください。
@@ -28,7 +28,9 @@
       <div class="card-content">
         <div class="content">
           <!-- TODO: 詳細情報デザイン -->
-          値段：{{ product.price }}円 作業人数：{{ product.number_of_people }}名
+          値段：{{ product.price.N }}円 作業人数：{{
+            product.number_of_people.N
+          }}名
           <template v-if="productOptions[product.id]">
             <b-field>
               <b-select

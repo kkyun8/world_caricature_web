@@ -12,7 +12,7 @@
             </li>
           </ul>
         </nav>
-        <div class="content">
+        <div v-if="product.id" class="content">
           <div class="columns">
             <div class="column">
               <article class="media">
@@ -36,15 +36,18 @@
                   <div class="media-content">
                     <div class="content">
                       <p>
-                        <strong>担当作家：{{ artist.name }}</strong>
-                        <br />
-                        <small
-                          >経歴：役{{ artist.service_years }}年
-                          {{ artist.career_data }}
+                        <template v-if="artist.artist_nickname">
+                          <strong>担当作家：{{ artist.name.S }}</strong>
                           <br />
-                        </small>
-                        <br />
-                        作家からのコメント：{{ product.artist_comment }}
+                          <small
+                            >経歴：役{{ artist.service_years.N }}年
+                            {{ artist.career_data.S }}
+                            <br />
+                          </small>
+                          <br />
+                        </template>
+
+                        作家からのコメント：{{ product.artist_comment.S }}
                         <br />
                       </p>
                     </div>
@@ -54,19 +57,19 @@
             </div>
 
             <div class="column">
-              <h1>{{ product.title }}</h1>
+              <h1>{{ product.title.S }}</h1>
               <div class="m-4">
-                {{ product.information }}
+                {{ product.information.S }}
               </div>
               <div class="m-4">
-                人数：{{ product.number_of_people }}名
+                人数：{{ product.number_of_people.N }}名
                 <br />
                 タイプ：{{ orderTypeName }}
                 <br />
-                {{ product.price }}円
+                {{ product.price.N }}円
                 <br />
                 作業時間：
-                {{ productionTimeName }}
+                {{ product.production_time.S }}
               </div>
               <div class="columns">
                 <div class="column">
@@ -95,7 +98,7 @@
           </div>
           <b-tabs position="is-centered" expanded>
             <b-tab-item label="商品詳細" icon="google-photos">
-              {{ product.product_detail_image_url }}
+              {{ product.product_detail_image_url.S }}
             </b-tab-item>
             <b-tab-item label="レビュー" icon="library-music"></b-tab-item>
             <b-tab-item
@@ -122,44 +125,31 @@ export default {
       cart: (state) => state.cart.cart,
       cartMaxCount: (state) => state.cart.cartMaxCount,
       cartLocalStorageKey: (state) => state.common.cartLocalStorageKey,
-      orderTypes: (state) => state.order_master.orderTypes,
-      productionTimes: (state) => state.order_master.productionTimes,
     }),
     orderTypeName() {
-      if (this.product.id === 0) return ''
-      const ots = [...this.orderTypes]
-      const result = this.product.order_type
-        .map((o) => {
-          const ot = ots.find((t) => o === t.id)
-          return ot.name
-        })
-        .join(' ')
+      if (!this.product.id) return ''
+      const result = this.product.order_type.NS.join(' ')
       return result
-    },
-    productionTimeName() {
-      if (this.product.id === 0) return ''
-      const result = this.productionTimes.find(
-        (p) => p.id === this.product.production_time
-      )
-      return result.name
     },
   },
   watch: {
     product(newVal) {
-      if (newVal.artist_id !== 0) {
-        const readArtist = this.readArtist({ id: newVal.artist_id })
-        this.readAllApi([readArtist])
+      if (newVal?.artist_nickname.S) {
+        const getArtistItem = this.getArtistItem({
+          artistNickname: newVal.artist_nickname.S,
+        })
+        this.readAllApi([getArtistItem])
       }
     },
   },
   created() {
     this.isLoading = true
-    const readProduct = this.readProduct({ id: this.$route.query.id })
-    this.readAllApi([readProduct])
+    const getProductItem = this.getProductItem({ id: this.$route.query.id })
+    this.readAllApi([getProductItem])
   },
   methods: {
-    ...mapActions('artists', ['readArtist']),
-    ...mapActions('products', ['readProduct']),
+    ...mapActions('artists', ['getArtistItem']),
+    ...mapActions('products', ['getProductItem']),
     ...mapMutations({
       setCart: 'cart/setCart',
     }),
