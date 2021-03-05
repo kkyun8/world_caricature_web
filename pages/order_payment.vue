@@ -208,6 +208,7 @@ export default {
     // TODO: order.productIds, not cart
     ...mapGetters({
       productItemInCart: 'products/productItemInCart',
+      createOrderId: 'order_info/createOrderId',
     }),
     reserveDateJp() {
       if (this.reserveDates[0] === undefined) return ''
@@ -230,7 +231,7 @@ export default {
     this.paymentForm.destroy()
   },
   methods: {
-    ...mapActions('order_info', ['createOrder']),
+    ...mapActions('order_info', ['putOrderItem']),
     ...mapMutations({
       setOrder: 'order_info/setOrder',
       setIsSqPaymentLoading: 'order_payment/setIsSqPaymentLoading',
@@ -316,9 +317,19 @@ export default {
               })
               .then((data) => {
                 console.log(data)
-                t.$router.push({
-                  path: 'payment_complete',
-                  query: { id: 1 },
+                // TODO:
+                // add order and payment result
+                const values = JSON.parse(JSON.stringify(t.order))
+                values.orderId = t.createOrderId()
+                values.orderStatus = '決済済み'
+
+                const putOrderItem = t.putOrderItem(values)
+                t.callApis([putOrderItem])
+                putOrderItem.then(() => {
+                  t.$router.push({
+                    path: 'payment_complete',
+                    query: { id: values.orderId },
+                  })
                 })
               })
               .catch((err) => {

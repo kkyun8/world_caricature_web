@@ -1,3 +1,5 @@
+const TableName = 'products'
+
 export const state = () => ({
   products: [],
   product: {},
@@ -28,7 +30,7 @@ export const getters = {
 export const actions = {
   async scanProducts({ commit }) {
     const params = {
-      TableName: 'products',
+      TableName,
     }
     const result = this.$aws_ddb().scan(params).promise()
     await result.then((res) => {
@@ -39,7 +41,7 @@ export const actions = {
   },
   async getProductItem({ commit }, values) {
     const params = {
-      TableName: 'products',
+      TableName,
       Key: {
         id: { S: values.id },
       },

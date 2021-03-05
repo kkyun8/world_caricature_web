@@ -1,3 +1,5 @@
+const TableName = 'artists'
+
 export const state = () => ({
   artists: [],
   artist: {},
@@ -15,7 +17,7 @@ export const mutations = {
 export const actions = {
   async scanArtists({ commit }) {
     const params = {
-      TableName: 'artists',
+      TableName,
     }
     const result = this.$aws_ddb().scan(params).promise()
     await result.then((res) => {
@@ -26,7 +28,7 @@ export const actions = {
   // TODO: cors policy error
   async getArtistItem({ commit }, values) {
     const params = {
-      TableName: 'artists',
+      TableName,
       Key: {
         artist_nickname: { S: values.artistNickname },
       },
