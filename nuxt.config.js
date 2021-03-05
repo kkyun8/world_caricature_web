@@ -88,6 +88,12 @@ export default {
     'http://localhost:3000/face-api': {
       target: 'http://localhost:4000/',
     },
+    'http://localhost:3000/dynamodb': {
+      target: 'http://localhost:8000 ',
+      pathRewrite: {
+        '^/dynamodb': '/',
+      },
+    },
   },
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},

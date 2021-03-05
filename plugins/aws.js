@@ -10,7 +10,7 @@ export const s3 = new AWS.S3({ accessKeyId, secretAccessKey })
 
 export const ddb = new AWS.DynamoDB({
   // local
-  endpoint: 'http://localhost:8000',
+  endpoint: 'http://localhost:3000/dynamodb',
   region: 'ap-northeast-1',
   accessKeyId,
   secretAccessKey,
