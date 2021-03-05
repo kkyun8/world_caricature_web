@@ -138,14 +138,14 @@ export default {
         const getArtistItem = this.getArtistItem({
           artistNickname: newVal.artist_nickname.S,
         })
-        this.readAllApi([getArtistItem])
+        this.callApis([getArtistItem])
       }
     },
   },
   created() {
     this.isLoading = true
     const getProductItem = this.getProductItem({ id: this.$route.query.id })
-    this.readAllApi([getProductItem])
+    this.callApis([getProductItem])
   },
   methods: {
     ...mapActions('artists', ['getArtistItem']),

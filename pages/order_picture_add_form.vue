@@ -260,7 +260,7 @@ export default {
   },
   created() {
     // check key
-    const readOrderPictureUrlKey = this.readOrderPictureUrlKey({
+    const getOrderItemFromPictureUrlKey = this.getOrderItemFromPictureUrlKey({
       key: this.$route.query.key,
     })
     const readOrder = this.readOrder({
@@ -268,12 +268,12 @@ export default {
       // orderNumber: '',
       // email: '',
     })
-    this.readAllApi([readOrderPictureUrlKey, readOrder])
+    this.callApis([getOrderItemFromPictureUrlKey, readOrder])
   },
   methods: {
     ...mapActions('order_info', ['readOrder']),
     ...mapActions('order_info', [
-      'readOrderPictureUrlKey',
+      'getOrderItemFromPictureUrlKey',
       'readOrder',
       'updateOrder',
     ]),
@@ -358,7 +358,7 @@ export default {
       // TODO: mock
       // const updateOrder = this.updateOrder({ orderNumber, orderStatus })
 
-      // this.readAllApi([updateOrder]).then(() => {
+      // this.callApis([updateOrder]).then(() => {
       //   this.$router.push({
       //     path: 'order_picture_add_complete',
       //   })

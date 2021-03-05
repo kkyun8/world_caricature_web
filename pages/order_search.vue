@@ -166,7 +166,7 @@ export default {
         orderNumber: this.orderNumber,
         email: this.email,
       })
-      this.readAllApi([readOrder])
+      this.callApis([readOrder])
     },
   },
 }

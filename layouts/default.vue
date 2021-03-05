@@ -178,7 +178,7 @@ export default {
     this.isLoading = true
     const scanProducts = this.scanProducts()
     const scanOrderItemLabels = this.scanOrderItemLabels()
-    this.readAllApi([scanProducts, scanOrderItemLabels])
+    this.callApis([scanProducts, scanOrderItemLabels])
   },
   mounted() {
     this.checkLocalStorage()

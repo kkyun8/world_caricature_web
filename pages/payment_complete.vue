@@ -36,7 +36,7 @@ export default {
     this.isLoading = true
     // TODO: order id
     const readOrder = this.readOrder({ id: this.$route.query.id })
-    this.readAllApi([readOrder])
+    this.callApis([readOrder])
   },
   beforeDestroy() {
     this.setTargetOrder(null)

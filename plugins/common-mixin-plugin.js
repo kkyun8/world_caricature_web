@@ -44,9 +44,12 @@ if (!Vue.__my_mixin__) {
        * REST GET api 共通ロジック
        * @param {*} apis
        */
-      readAllApi(apis) {
+      callApis(apis) {
         Promise.all(apis)
-          .catch((err) => (this.apiMessage = err))
+          .catch((err) => {
+            console.log(err)
+            this.apiMessage = err
+          })
           .finally(() => (this.isLoading = false))
       },
       /**
