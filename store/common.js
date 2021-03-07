@@ -1,13 +1,17 @@
 export const state = () => ({
   isLoading: false,
-  apiMessage: '',
+  apiErrMessage: '',
+  apiResultMessage: '',
   cartLocalStorageKey: process.env.CART_LOCAL_STORAGE_KEY,
 })
 export const mutations = {
   setIsLoading(state, data) {
     state.isLoading = data
   },
-  setApiMessage(state, data) {
-    state.apiMessage = data
+  setApiErrMessage(state, data) {
+    state.apiErrMessage = data
+  },
+  setApiResultMessage(state, data) {
+    state.apiResultMessage = data
   },
 }

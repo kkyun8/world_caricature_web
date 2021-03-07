@@ -22,10 +22,10 @@ if (!Vue.__my_mixin__) {
        * api result message
        * @param {*} string
        */
-      apiMessage: {
+      apiErrMessage: {
         // getter
         get() {
-          return this.$store.state.common.apiMessage
+          return this.$store.state.common.apiErrMessage
         },
         // setter
         set(newVal) {
@@ -35,7 +35,25 @@ if (!Vue.__my_mixin__) {
               type: 'is-danger',
             })
           }
-          this.$store.commit('common/setApiMessage', newVal)
+          this.$store.commit('common/setApiErrMessage', newVal)
+        },
+      },
+      apiResultMessage: {
+        // getter
+        get() {
+          return this.$store.state.common.apiResultMessage
+        },
+        // setter
+        set(newVal) {
+          if (newVal) {
+            this.$buefy.notification.open({
+              duration: 5000,
+              message: newVal,
+              position: 'is-top',
+              type: 'is-info',
+            })
+          }
+          this.$store.commit('common/setApiResultMessage', newVal)
         },
       },
     },
@@ -48,7 +66,7 @@ if (!Vue.__my_mixin__) {
         Promise.all(apis)
           .catch((err) => {
             console.log(err)
-            this.apiMessage = err
+            this.apiErrMessage = err
           })
           .finally(() => (this.isLoading = false))
       },
