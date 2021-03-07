@@ -11,17 +11,19 @@
                 </b-message>
                 <div ref="form" class="card">
                   <div class="card-content">
-                    <b-field label="注文番号">
+                    <b-field ref="orderId-field" label="注文番号">
                       <b-input
-                        v-model="orderNumber"
+                        v-model="orderId"
                         placeholder="注文番号を入力してください。"
+                        required
                       ></b-input>
                     </b-field>
-                    <b-field label="メールアドレス">
+                    <b-field ref="email-field" label="メールアドレス">
                       <b-input
                         v-model="email"
                         placeholder="メールアドレスを入力してください。"
                         type="email"
+                        required
                       ></b-input>
                     </b-field>
                     <div class="mt-5">
@@ -29,6 +31,7 @@
                         type="is-primary"
                         outlined
                         expanded
+                        :disabled="isNotValidated"
                         @click.stop.prevent="search"
                         >検索</b-button
                       >
@@ -37,16 +40,12 @@
                 </div>
               </div>
             </div>
-            <div
-              v-for="(t, ti) in targetOrder"
-              :key="`t-${ti}`"
-              class="columns"
-            >
+            <div v-if="order" class="columns">
               <div class="column">
                 <div class="card">
                   <header class="card-header">
                     <span class="card-header-title"
-                      >注文番号：{{ t.orderNumber }}</span
+                      >注文番号：{{ order.order_id.S }}</span
                     >
                   </header>
                   <div class="card-content">
@@ -79,32 +78,36 @@
                         </div>
                         <b-field horizontal label="名前">
                           <b-input
-                            :value="t.nameKanzi"
+                            :value="order.name_kanzi.S"
                             disabled
                             expanded
                           ></b-input>
                           <b-input
-                            :value="t.nameFurigana"
+                            :value="order.name_furigana.S"
                             disabled
                             expanded
                           ></b-input>
                         </b-field>
                         <b-field horizontal label="住所">
                           <b-input
-                            :value="t.address1"
+                            :value="order.address1.S"
                             disabled
                             expanded
                           ></b-input>
                           <b-input
-                            :value="t.address2"
+                            :value="order.address2.S"
                             disabled
                             expanded
                           ></b-input>
                         </b-field>
                         <b-field horizontal label="連絡先情報">
-                          <b-input :value="t.email" disabled expanded></b-input>
                           <b-input
-                            :value="t.cellPhoneNumber"
+                            :value="order.email.S"
+                            disabled
+                            expanded
+                          ></b-input>
+                          <b-input
+                            :value="order.cell_phone_number.S"
                             disabled
                             expanded
                           ></b-input>
@@ -112,7 +115,7 @@
                         <b-field horizontal label="コメント">
                           <b-input
                             type="textarea"
-                            :value="t.comment"
+                            :value="order.comment.S"
                             disabled
                           ></b-input>
                         </b-field>
@@ -136,7 +139,7 @@ export default {
   name: 'OrderSearch',
   data() {
     return {
-      orderNumber: '',
+      orderId: '',
       email: '',
       isSearch: false,
       product: null,
@@ -144,29 +147,51 @@ export default {
   },
   computed: {
     ...mapState({
-      targetOrder: (state) => state.order_info.targetOrder,
+      order: (state) => state.order_info.order,
       orderStatus: (state) => state.order_master.orderStatus,
       orderTypes: (state) => state.order_master.orderTypes,
       productionTimes: (state) => state.order_master.productionTimes,
     }),
+    isNotValidated() {
+      const checkFmsg = (field) => {
+        const result = Array.isArray(field.formattedMessage)
+          ? field.formattedMessage.length > 0
+          : true
+        return result
+      }
+      const inputs = !this.orderId || !this.email
+      if (inputs) {
+        return true
+      }
+      const orderIdField = checkFmsg(this.$refs['orderId-field'])
+      const emailField = checkFmsg(this.$refs['email-field'])
+
+      return orderIdField || emailField
+    },
   },
   beforeDestroy() {
     this.setTargetOrder(null)
   },
   methods: {
-    ...mapActions('order_info', ['readOrder']),
+    ...mapActions('order_info', ['queryOrderOrderIdEmail']),
     ...mapMutations({
       setTargetOrder: 'order_info/setTargetOrder',
     }),
     search() {
-      if (!this.orderNumber && !this.email) {
+      if (this.isNotValidated) {
+        return
       }
       this.isLoading = true
-      const readOrder = this.readOrder({
-        orderNumber: this.orderNumber,
+      const queryOrderOrderIdEmail = this.queryOrderOrderIdEmail({
+        orderId: this.orderId,
         email: this.email,
       })
-      this.callApis([readOrder])
+      this.callApis([queryOrderOrderIdEmail])
+      queryOrderOrderIdEmail.then(() => {
+        if (!this.order) {
+          this.apiResultMessage = '注文情報が存在しません。'
+        }
+      })
     },
   },
 }

@@ -45,7 +45,7 @@ export const state = () => ({
   },
   // TODO: set calc price
   targetOrder: null,
-  order: {},
+  order: null,
   isActivePictureAddFormKey: null,
 })
 
@@ -70,17 +70,21 @@ export const getters = {
 }
 
 export const actions = {
-  async getOrderItem({ commit }, values) {
+  async queryOrderOrderIdEmail({ commit }, values) {
     const params = {
-      TableName,
-      Key: {
-        order_id: { S: values.orderId },
-        email: { S: values.email },
+      ExpressionAttributeValues: {
+        ':o': { S: values.orderId },
+        ':e': { S: values.email },
       },
+      TableName,
+      IndexName: 'order-id-email-index',
+      KeyConditionExpression: 'order_id = :o and email = :e',
     }
-    const result = this.$aws_ddb().getItem(params).promise()
+
+    const result = this.$aws_ddb().query(params).promise()
     await result.then((res) => {
-      commit('setTargetOrder', res.Item)
+      const item = res.Items.length > 0 ? res.Items[0] : null
+      commit('setOrder', item)
     })
     return result
   },
