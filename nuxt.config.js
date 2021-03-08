@@ -12,6 +12,8 @@ const {
   AWS_URL,
   LINE_CHANNEL_ACCESS_TOKEN,
   LINE_CHANNEL_SECRET,
+  POSTAL_CODE_API_URL,
+  POSTAL_CODE_API_KEY,
 } = process.env
 
 export default {
@@ -111,5 +113,7 @@ export default {
     AWS_URL,
     LINE_CHANNEL_ACCESS_TOKEN,
     LINE_CHANNEL_SECRET,
+    POSTAL_CODE_API_URL,
+    POSTAL_CODE_API_KEY,
   },
 }
