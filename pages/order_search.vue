@@ -11,7 +11,7 @@
                 </b-message>
                 <div ref="form" class="card">
                   <div class="card-content">
-                    <b-field ref="orderId-field" label="注文番号">
+                    <b-field ref="order-id-field" label="注文番号">
                       <b-input
                         v-model="orderId"
                         placeholder="注文番号を入力してください。"
@@ -163,7 +163,7 @@ export default {
       if (inputs) {
         return true
       }
-      const orderIdField = checkFmsg(this.$refs['orderId-field'])
+      const orderIdField = checkFmsg(this.$refs['order-id-field'])
       const emailField = checkFmsg(this.$refs['email-field'])
 
       return orderIdField || emailField

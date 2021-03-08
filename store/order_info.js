@@ -29,7 +29,7 @@ export const state = () => ({
     email: '',
     lineId: '',
     cellPhoneNumber: '',
-    postalCode: null,
+    postalCode: '',
     address1: '',
     address2: '',
     comment: '',

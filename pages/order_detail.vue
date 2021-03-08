@@ -61,7 +61,7 @@
               <h2>注文者情報</h2>
               <div class="columns">
                 <div class="column">
-                  <b-field label="漢字">
+                  <b-field ref="name-kanzi-field" label="漢字">
                     <b-input
                       v-model="editOrder.nameKanzi"
                       placeholder="田中太郎"
@@ -70,10 +70,12 @@
                   </b-field>
                 </div>
                 <div class="column">
-                  <b-field label="フリガナ">
+                  <b-field ref="name-furigana-field" label="フリガナ">
                     <b-input
                       v-model="editOrder.nameFurigana"
                       placeholder="タナカタロウ"
+                      :pattern="furiganaPattern"
+                      :validation-message="validateMsg.nameFurigana"
                       required
                     ></b-input>
                   </b-field>
@@ -81,61 +83,83 @@
               </div>
               <div class="columns">
                 <div class="column">
-                  <b-message type="is-info" has-icon>
-                    注文が完了されたら、注文情報や運送情報を確認できるアカウントを決めてください。
+                  <b-message type="is-warning" has-icon>
+                    注文情報を通知する
                   </b-message>
                 </div>
               </div>
               <div class="columns">
-                <div class="column">
-                  <b-radio-button
-                    v-model="editOrder.isSendEmail"
-                    :native-value="true"
-                    type="is-primary is-light is-outlined"
-                  >
-                    <b-icon icon="email"></b-icon>
-                    <span>メールでやりとり</span>
-                  </b-radio-button>
-                </div>
-                <div class="column">
-                  <b-radio-button
-                    v-model="editOrder.isSendEmail"
-                    :native-value="false"
-                    type="is-success is-light is-outlined"
-                  >
-                    <b-icon icon="chat"></b-icon>
-                    <span>ラインアカウントでやりとり</span>
-                  </b-radio-button>
-                </div>
-              </div>
-              <div class="columns">
-                <div class="column">
-                  <b-field label="連絡方法 メール">
+                <div class="column is-3">
+                  <b-field ref="email-field" label="メール">
                     <b-input
                       v-model="editOrder.email"
                       placeholder="mail@mail.com"
                       type="email"
-                      :disabled="!editOrder.isSendEmail"
-                      :required="editOrder.isSendEmail"
+                      required
+                      expanded
                     ></b-input>
                   </b-field>
                 </div>
-                <div class="column">
-                  <b-field label="連絡方法 ライン">
-                    <!-- v-model="editOrder.lineId"-->
+                <div class="column is-3">
+                  <b-field ref="line-field" label="ライン">
                     <b-button
                       expanded
                       type="primary"
-                      :disabled="editOrder.isSendEmail"
-                      :required="!editOrder.isSendEmail"
+                      :required="editOrder.isSendLine"
                       ><i class="fab fa-line fa-2x" style="color: #00b900"></i
                     ></b-button>
+                  </b-field>
+                </div>
+                <div class="column is-3">
+                  <b-field label="連絡方法 メール">
+                    <b-button
+                      v-model="editOrder.isSendEmail"
+                      :type="
+                        editOrder.isSendEmail
+                          ? 'is-primary'
+                          : 'is-link is-light'
+                      "
+                      :outlined="!editOrder.isSendEmail"
+                      expanded
+                      @click="editOrder.isSendEmail = !editOrder.isSendEmail"
+                    >
+                      <b-icon
+                        :icon="editOrder.isSendEmail ? 'check' : 'email'"
+                      ></b-icon>
+                      <span
+                        ><template v-if="editOrder.isSendEmail"
+                          >メールを受信します</template
+                        ><template v-else>メール受信しません</template></span
+                      >
+                    </b-button>
+                  </b-field>
+                </div>
+                <div class="column is-3">
+                  <b-field label="連絡方法 ">
+                    <b-button
+                      v-model="editOrder.isSendLine"
+                      :type="
+                        editOrder.isSendLine ? 'is-success' : 'is-link is-light'
+                      "
+                      :outlined="!editOrder.isSendLine"
+                      expanded
+                      @click="editOrder.isSendLine = !editOrder.isSendLine"
+                    >
+                      <b-icon
+                        :icon="editOrder.isSendLine ? 'check' : 'chat'"
+                      ></b-icon>
+                      <span
+                        ><template v-if="editOrder.isSendLine"
+                          >ラインで受信します</template
+                        ><template v-else>ラインで受信しません</template></span
+                      >
+                    </b-button>
                   </b-field>
                 </div>
               </div>
               <div class="columns">
                 <div class="column">
-                  <b-field label="電話番号 携帯">
+                  <b-field ref="cell-phone-number-field" label="電話番号 携帯">
                     <b-input
                       v-model="editOrder.cellPhoneNumber"
                       placeholder="09012345678"
@@ -148,7 +172,7 @@
                   </b-field>
                 </div>
                 <div class="column">
-                  <b-field label="郵便番号">
+                  <b-field ref="postal-code-field" label="郵便番号">
                     <b-input
                       v-model="editOrder.postalCode"
                       placeholder="123-4567"
@@ -163,16 +187,16 @@
               </div>
               <div class="columns">
                 <div class="column">
-                  <b-field label="住所">
+                  <b-field ref="address-1-field" label="住所">
                     <b-input
                       v-model="editOrder.address1"
-                      placeholder="東京都豊島区"
+                      placeholder="*郵便番号を入力すると自動入力されます"
                       required
                     ></b-input>
                   </b-field>
                 </div>
                 <div class="column">
-                  <b-field label="住所 詳細">
+                  <b-field ref="address-2-field" label="住所 詳細">
                     <b-input
                       v-model="editOrder.address2"
                       placeholder="1-2-3 101号"
@@ -183,7 +207,7 @@
               </div>
               <div class="columns">
                 <div class="column">
-                  <b-field label="コメント">
+                  <b-field ref="comment-field" label="コメント">
                     <textarea
                       v-model="editOrder.comment"
                       class="textarea"
@@ -200,13 +224,15 @@
                   >
                 </div>
                 <div class="column">
-                  <div
-                    class="button is-fullwidth is-primary"
+                  <b-button
+                    type="is-primary"
+                    expanded
+                    :disabled="isNotValidated"
                     @click="createOrderPayment()"
                   >
                     <i class="fa fa-credit-card mr-1" aria-hidden="true"></i
-                    >支払いする
-                  </div>
+                    >注文を作成して支払いに進む
+                  </b-button>
                 </div>
               </div>
             </div>
@@ -228,9 +254,13 @@ export default {
   },
   data() {
     return {
+      furiganaPattern: '[ァ-ヶー　]+$',
       validateMsg: {
+        nameKanzi: '全角文字で入力してください。',
+        nameFurigana: '全角カタカナで入力してください。',
         phone: 'ハイフン（-）なしで半角数字のみ入力してください。',
-        postalCode: '郵便番号形式ではありません。',
+        postalCode:
+          '郵便番号形式ではありません。ハイフン（-）ありで半角数字のみ入力してください。',
       },
       editOrder: {},
       productOptions: {},
@@ -276,6 +306,67 @@ export default {
     },
     totalPrice() {
       return this.productPrice + this.flamePrice + this.wrappingPrice
+    },
+    isNotValidated() {
+      const checkFmsg = (field) => {
+        const result = Array.isArray(field.formattedMessage)
+          ? field.formattedMessage.length > 0
+          : true
+        return result
+      }
+      // editOrder.lineId
+      const inputs =
+        !this.editOrder.nameKanzi ||
+        !this.editOrder.nameFurigana ||
+        !this.editOrder.email ||
+        !this.editOrder.cellPhoneNumber ||
+        !this.editOrder.postalCode ||
+        !this.editOrder.address1 ||
+        !this.editOrder.address2 ||
+        !this.editOrder.comment
+      if (inputs) {
+        return true
+      }
+      const nameKanziField = checkFmsg(this.$refs['name-kanzi-field'])
+      const nameFuriganaField = checkFmsg(this.$refs['name-furigana-field'])
+      const emailField = checkFmsg(this.$refs['email-field'])
+      const cellPhoneNumberField = checkFmsg(
+        this.$refs['cell-phone-number-field']
+      )
+      const postalCodeField = checkFmsg(this.$refs['postal-code-field'])
+      const addressOneField = checkFmsg(this.$refs['address-1-field'])
+      const addressTwoField = checkFmsg(this.$refs['address-2-field'])
+      const commentField = checkFmsg(this.$refs['comment-field'])
+
+      const result =
+        nameKanziField ||
+        nameFuriganaField ||
+        emailField ||
+        cellPhoneNumberField ||
+        addressOneField ||
+        postalCodeField ||
+        addressOneField ||
+        addressTwoField ||
+        commentField
+      return result
+    },
+  },
+  watch: {
+    editOrder: {
+      async handler(newVal) {
+        if (newVal.postalCode.length === 8) {
+          const url = process.env.POSTAL_CODE_API_URL
+          const key = process.env.POSTAL_CODE_API_KEY
+          const code = newVal.postalCode.replace('-', '')
+          const t = this
+          await this.$axios
+            .$get(`${url}apikey=${key}&postcode=${code}`)
+            .then((res) => {
+              t.editOrder.address1 = res.data[0].allAddress
+            })
+        }
+      },
+      deep: true,
     },
   },
   created() {
