@@ -1,0 +1,39 @@
+html {
+    scroll-behavior: smooth;
+}
+body{
+    font-family: 'Nunito Sans', sans-serif, 'Segoe UI','Fira Sans','Droid Sans', 'Helvetica Neue',Helvetica Arial,sans-serif;
+}
+/* .button:hover {
+    text-shadow: 0px 0px 6px rgba(255, 255, 255, 1);
+-webkit-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+-moz-box-shadow: 0px 5px 40px -10px rgba(0,0,0,0.57);
+transition: all 0.4s ease 0s;
+}
+
+hr.rounded {
+    border-top: 2px solid  #c7b8ea;
+    border-radius: 2px;
+  }
+
+.button{
+    background-color: #c7b8ea;
+} */
+
+#features{
+    background: linear-gradient(180deg, rgba(238,174,202,0.7973390039609594) 0%, rgba(200,179,215,1) 26%, rgb(255 255 255) 100%);
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.sectionf{
+    padding-top: 1.5rem;
+}
+
+/* #footer{
+    padding: 0.5rem;
+} */
+
+#users-feed{
+    padding: 4rem 1.5rem;
+}
