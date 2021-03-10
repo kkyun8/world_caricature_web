@@ -1,11 +1,13 @@
 <template>
-  <footer class="footer">
+  <footer class="footer mt-6">
+    <hr class="rounded mb-6" />
     <div class="content has-text-centered">
-      <p>
-        <strong>ワルド似顔絵</strong>
-        <a href="#">Jeremy Thomas</a>. The source code is licensed
-        <a href="#">MIT</a>. The website content is licensed
-      </p>
+      <div>
+        <nuxt-link to="/about">会社情報 /</nuxt-link>
+        <nuxt-link to="/privacy"> プライバシーポリシー /</nuxt-link>
+        <nuxt-link to="/contact">Contact</nuxt-link>
+      </div>
+      <p class="mt-6">© 2021 · WorldCaricature · All rights reserved</p>
     </div>
   </footer>
 </template>
@@ -14,4 +16,8 @@
 export default {}
 </script>
 
-<style></style>
+<style>
+.footer {
+  background-color: #ffffff;
+}
+</style>

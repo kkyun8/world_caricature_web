@@ -10,22 +10,28 @@
         </b-navbar-item>
       </template>
       <template #start>
-        <nuxt-link to="/order_flow" class="navbar-item">注文の流れ</nuxt-link>
+        <nuxt-link :to="{ path: '/#features' }" class="navbar-item"
+          >注文の流れ</nuxt-link
+        >
         <nuxt-link to="/artists" class="navbar-item">作家紹介</nuxt-link>
         <nuxt-link to="/products" class="navbar-item"
           >商品一覧から注文する</nuxt-link
         >
         <nuxt-link to="/order_search" class="navbar-item">注文確認</nuxt-link>
-        <nuxt-link to="/about" class="navbar-item">About</nuxt-link>
-        <nuxt-link to="/contact" class="navbar-item">Contact</nuxt-link>
+        <nuxt-link :to="{ path: '/#artist-contact' }" class="navbar-item"
+          >アーティスト募集</nuxt-link
+        >
+
+        <nuxt-link to="/fqa" class="navbar-item">よくある質問</nuxt-link>
       </template>
 
       <template #end>
-        <div class="navbar-item">
+        <!-- TODO: login icon
+          <div class="navbar-item">
           <font-awesome-layers full-width class="fa-2x has-text-primary">
             <font-awesome-icon icon="sign-in-alt" class="is-primary" />
           </font-awesome-layers>
-        </div>
+        </div> -->
         <div class="navbar-item">
           <font-awesome-layers
             full-width

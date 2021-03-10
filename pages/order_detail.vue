@@ -322,8 +322,7 @@ export default {
         !this.editOrder.cellPhoneNumber ||
         !this.editOrder.postalCode ||
         !this.editOrder.address1 ||
-        !this.editOrder.address2 ||
-        !this.editOrder.comment
+        !this.editOrder.address2
       if (inputs) {
         return true
       }
@@ -336,7 +335,6 @@ export default {
       const postalCodeField = checkFmsg(this.$refs['postal-code-field'])
       const addressOneField = checkFmsg(this.$refs['address-1-field'])
       const addressTwoField = checkFmsg(this.$refs['address-2-field'])
-      const commentField = checkFmsg(this.$refs['comment-field'])
 
       const result =
         nameKanziField ||
@@ -346,8 +344,7 @@ export default {
         addressOneField ||
         postalCodeField ||
         addressOneField ||
-        addressTwoField ||
-        commentField
+        addressTwoField
       return result
     },
   },
