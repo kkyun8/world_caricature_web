@@ -21,7 +21,9 @@ export const actions = {
     }
     const result = this.$aws_ddb().scan(params).promise()
     await result.then((res) => {
-      const artists = res.Items.filter((i) => !i.is_delete.BOOL)
+      const artists = res.Items.filter((i) =>
+        i.is_delete ? !i.is_delete.BOOL : true
+      )
       commit('setArtists', artists)
     })
   },
