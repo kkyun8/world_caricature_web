@@ -25,6 +25,21 @@ export const getters = {
       }
     })
   },
+  productTags(state) {
+    const tags = state.products.reduce((a, r) => {
+      r.order_type.L.forEach((o) => a.add(o.S))
+      a.add(r.title.S)
+      a.add(r.number_of_people.N)
+      a.add(r.price.N)
+      a.add(r.production_time.S)
+      a.add(r.information.S)
+      a.add(r.artist_comment.S)
+      a.add(r.artist_nickname.S)
+      return a
+    }, new Set())
+
+    return Array.from(tags)
+  },
 }
 
 export const actions = {

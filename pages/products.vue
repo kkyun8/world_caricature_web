@@ -10,7 +10,7 @@
             </b-message>
             <b-field label="キーワードを入力してください。">
               <b-taginput
-                v-model="tags"
+                v-model="seletedTags"
                 :data="filteredTags"
                 autocomplete
                 field="hash"
@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import ProductsCarousel from '~/components/ProductsCarousel'
 import ProductImageCard from '~/components/ProductImageCard'
 
@@ -98,7 +98,8 @@ export default {
   data() {
     return {
       isSelectOnly: false,
-      filteredTags: this.productHashTags,
+      seletedTags: [],
+      filteredTags: [],
       tags: [],
       activeTab: 'recommend',
       current: 1,
@@ -112,6 +113,7 @@ export default {
       productionTimes: (state) => state.order_master.productionTimes,
       products: (state) => state.products.products,
     }),
+    ...mapGetters('products', ['productTags']),
     total() {
       return this.products.length
     },
@@ -147,15 +149,17 @@ export default {
         })
         .filter((e, i) => start < i + 1 && i + 1 <= end)
 
-      if (this.tags.length > 0) {
-        const hashs = this.tags.map((t) => t.hash)
+      if (this.seletedTags.length > 0) {
+        const hashs = this.seletedTags.map((t) => t.hash)
         result = result.filter((i) => {
           return hashs.some((h) => {
+            const ots = i.order_type.L.map((o) => o.S)
             return (
-              i.title.includes(h) ||
-              i.information.includes(h) ||
-              i.order_type_name.includes(h) ||
-              i.production_time_name.includes(h)
+              i.title.S.includes(h) ||
+              i.information.S.includes(h) ||
+              ots.includes(h) ||
+              i.production_time.S.includes(h) ||
+              i.artist_nickname?.S.includes(h)
             )
           })
         })
@@ -170,14 +174,26 @@ export default {
 
       return result
     },
+    productTagsHash() {
+      return this.productTags.map((t) => {
+        return { hash: t }
+      })
+    },
+  },
+  created() {
+    this.$route.query.artistNickname &&
+      this.seletedTags.push({ hash: this.$route.query.artistNickname })
   },
   methods: {
     clickTab(type) {
       this.activeTab = type
     },
     getFilteredTags(text) {
-      this.filteredTags = this.productHashTags.filter((option) => {
-        return option.hash.toString().toLowerCase().includes(text.toLowerCase())
+      this.filteredTags = this.productTagsHash.filter((tag) => {
+        if (tag.hash) {
+          return tag.hash.toString().toLowerCase().includes(text.toLowerCase())
+        }
+        return false
       })
     },
   },
