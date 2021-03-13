@@ -27,17 +27,20 @@ export const actions = {
       commit('setArtists', artists)
     })
   },
-  // TODO: cors policy error
-  async getArtistItem({ commit }, values) {
+  async queryArtistArtistNickname({ commit }, values) {
     const params = {
-      TableName,
-      Key: {
-        artist_nickname: { S: values.artistNickname },
+      ExpressionAttributeValues: {
+        ':a': { S: values.artistNickname },
       },
+      TableName,
+      IndexName: 'nickname-index',
+      KeyConditionExpression: 'artist_nickname = :a',
     }
-    const result = this.$aws_ddb().getItem(params).promise()
+
+    const result = this.$aws_ddb().query(params).promise()
     await result.then((res) => {
-      commit('setArtist', res.Item)
+      const item = res.Items.length > 0 ? res.Items[0] : null
+      commit('setArtist', item)
     })
     return result
   },

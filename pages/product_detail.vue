@@ -36,12 +36,16 @@
                   <div class="media-content">
                     <div class="content">
                       <p>
-                        <template v-if="artist.artist_nickname">
-                          <strong>担当作家：{{ artist.name.S }}</strong>
+                        <template v-if="Object.keys(artist).length > 0">
+                          <strong
+                            >担当作家：{{ artist.artist_nickname.S }}</strong
+                          >
                           <br />
-                          <small
+                          <small v-if="artist.service_years"
                             >経歴：役{{ artist.service_years.N }}年
-                            {{ artist.career_data.S }}
+                            <template v-if="artist.career_data">{{
+                              artist.career_data.S
+                            }}</template>
                             <br />
                           </small>
                           <br />
@@ -128,17 +132,17 @@ export default {
     }),
     orderTypeName() {
       if (!this.product.id) return ''
-      const result = this.product.order_type.NS.join(' ')
+      const result = this.product.order_type.SS.join('、')
       return result
     },
   },
   watch: {
     product(newVal) {
       if (newVal?.artist_nickname.S) {
-        const getArtistItem = this.getArtistItem({
+        const queryArtistArtistNickname = this.queryArtistArtistNickname({
           artistNickname: newVal.artist_nickname.S,
         })
-        this.callApis([getArtistItem])
+        this.callApis([queryArtistArtistNickname])
       }
     },
   },
@@ -148,7 +152,7 @@ export default {
     this.callApis([getProductItem])
   },
   methods: {
-    ...mapActions('artists', ['getArtistItem']),
+    ...mapActions('artists', ['queryArtistArtistNickname']),
     ...mapActions('products', ['getProductItem']),
     ...mapMutations({
       setCart: 'cart/setCart',
