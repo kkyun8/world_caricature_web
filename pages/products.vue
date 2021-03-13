@@ -153,11 +153,10 @@ export default {
         const hashs = this.seletedTags.map((t) => t.hash)
         result = result.filter((i) => {
           return hashs.some((h) => {
-            const ots = i.order_type.L.map((o) => o.S)
             return (
               i.title.S.includes(h) ||
               i.information.S.includes(h) ||
-              ots.includes(h) ||
+              i.order_type.SS.includes(h) ||
               i.production_time.S.includes(h) ||
               i.artist_nickname?.S.includes(h)
             )

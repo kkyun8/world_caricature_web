@@ -27,7 +27,7 @@ export const getters = {
   },
   productTags(state) {
     const tags = state.products.reduce((a, r) => {
-      r.order_type.L.forEach((o) => a.add(o.S))
+      r.order_type.SS.forEach((o) => a.add(o))
       a.add(r.title.S)
       a.add(r.number_of_people.N)
       a.add(r.price.N)
