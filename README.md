@@ -2,9 +2,19 @@
 
 似顔絵サイトリーファクトリー
 
-Nuxt + Bulma + amplify
+Nuxt + Bulma + ~~amplify~~
+
+＊amplifyはAWSの全体的な経験がないと使いにくいのでやめた。amplify使わずAWSからそれぞれ設定する。
+
+dynamodbのローカル環境：https://github.com/kkyun8/world_caricature_dynamodb_local
+
+サーバーサイド：https://github.com/kkyun8/world_caricature_api
+
+
 
 ## Build Setup
+
+＊.env設定が必要
 
 ```bash
 # install dependencies
