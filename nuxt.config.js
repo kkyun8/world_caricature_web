@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 require('dotenv').config()
 const {
   SQUARE_APPLICATION_ID,
@@ -14,6 +16,8 @@ const {
   LINE_CHANNEL_SECRET,
   POSTAL_CODE_API_URL,
   POSTAL_CODE_API_KEY,
+  AUTH_DOMAIN,
+  AUTH_CLIENT_ID,
 } = process.env
 
 export default {
@@ -29,6 +33,10 @@ export default {
       {
         type: 'text/javascript',
         src: 'https://js.squareupsandbox.com/v2/paymentform',
+      },
+      {
+        type: 'text/javascript',
+        src: 'https://cdn.rawgit.com/oauth-io/oauth-js/c5af4519/dist/oauth.js',
       },
     ],
     link: [
@@ -67,7 +75,23 @@ export default {
     '@nuxtjs/dotenv',
     'nuxt-fontawesome',
     '@nuxtjs/proxy',
+    '@nuxtjs/auth',
   ],
+  /**
+   * auth0
+   */
+  auth: {
+    strategies: {
+      auth0: {
+        domain: process.env.AUTH_DOMAIN,
+        client_id: process.env.AUTH_CLIENT_ID,
+      },
+    },
+    redirect: {
+      login: '/order_detail', // 未ログイン時のリダイレクト先
+      callback: '/callback', // コールバックURL
+    },
+  },
 
   /*
    ** FontAwesome
@@ -115,5 +139,7 @@ export default {
     LINE_CHANNEL_SECRET,
     POSTAL_CODE_API_URL,
     POSTAL_CODE_API_KEY,
+    AUTH_DOMAIN,
+    AUTH_CLIENT_ID,
   },
 }
