@@ -85,14 +85,16 @@ export default {
       auth0: {
         domain: process.env.AUTH_DOMAIN,
         client_id: process.env.AUTH_CLIENT_ID,
+        logoutRedirectUri: '/order_detail',
       },
     },
     redirect: {
-      login: '/order_detail', // 未ログイン時のリダイレクト先
+      login: '/order_detail',
+      logout: '/order_detail',
+      home: '/order_detail',
       callback: '/callback', // コールバックURL
     },
   },
-
   /*
    ** FontAwesome
    */

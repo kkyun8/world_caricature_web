@@ -12,7 +12,9 @@
       <section class="main-content columns mb-6">
         <div class="container column is-10 mb-6">
           <div class="containar is-max-desktop">
-            <div class="content"><h2>オブション</h2></div>
+            <div class="content">
+              <h2>オブション</h2>
+            </div>
             <div class="columns">
               <!-- TODO:  オブション説明イメージ表示、 -->
               <div class="column">
@@ -90,72 +92,60 @@
               </div>
               <div class="columns">
                 <div class="column is-3">
-                  <b-field ref="email-field" label="メール">
+                  <b-field ref="email-field" label="メール入力">
                     <b-input
                       v-model="editOrder.email"
                       placeholder="mail@mail.com"
                       type="email"
                       required
                       expanded
+                      :disabled="isLogin"
                     ></b-input>
                   </b-field>
                 </div>
                 <div class="column is-3">
-                  <b-field ref="line-field" label="ライン">
-                    <b-button
+                  <b-field ref="email-field" label="メール確認">
+                    <b-input
+                      v-model="emailConfirm"
+                      placeholder="mail@mail.com"
+                      type="email"
+                      required
                       expanded
-                      type="primary"
-                      :required="editOrder.isSendLine"
-                      ><i class="fab fa-line fa-2x" style="color: #00b900"></i
-                    ></b-button>
+                      :disabled="isLogin"
+                    ></b-input>
                   </b-field>
                 </div>
-                <div class="column is-3">
-                  <b-field label="連絡方法 メール">
+                <div v-if="!$auth.loggedIn" class="column is-6">
+                  <b-field label="ソーシャルログイン">
                     <b-button
-                      v-model="editOrder.isSendEmail"
-                      :type="
-                        editOrder.isSendEmail
-                          ? 'is-primary'
-                          : 'is-link is-light'
-                      "
-                      :outlined="!editOrder.isSendEmail"
                       expanded
-                      @click="editOrder.isSendEmail = !editOrder.isSendEmail"
+                      type="is-success is-light"
+                      @click="authLogin"
                     >
-                      <b-icon
-                        :icon="editOrder.isSendEmail ? 'check' : 'email'"
-                      ></b-icon>
-                      <span
-                        ><template v-if="editOrder.isSendEmail"
-                          >メールを受信します</template
-                        ><template v-else>メール受信しません</template></span
-                      >
+                      ここをクリックしてログインしてください。
                     </b-button>
                   </b-field>
                 </div>
-                <div class="column is-3">
-                  <b-field label="連絡方法 ">
-                    <b-button
-                      v-model="editOrder.isSendLine"
-                      :type="
-                        editOrder.isSendLine ? 'is-success' : 'is-link is-light'
-                      "
-                      :outlined="!editOrder.isSendLine"
-                      expanded
-                      @click="editOrder.isSendLine = !editOrder.isSendLine"
-                    >
-                      <b-icon
-                        :icon="editOrder.isSendLine ? 'check' : 'chat'"
-                      ></b-icon>
-                      <span
-                        ><template v-if="editOrder.isSendLine"
-                          >ラインで受信します</template
-                        ><template v-else>ラインで受信しません</template></span
+                <template v-else>
+                  <div class="column is-3">
+                    <b-field label="ソーシャル情報">
+                      <b-input
+                        :value="`${loginUserInfo.type}`"
+                        disabled
+                      ></b-input>
+                    </b-field>
+                  </div>
+                  <div class="column is-3">
+                    <b-field label="ログイン情報削除">
+                      <b-button
+                        expanded
+                        type="is-danger is-light"
+                        @click="authLogout"
+                        >ログイン情報削除</b-button
                       >
-                    </b-button>
-                  </b-field>
-                </div>
+                    </b-field>
+                  </div>
+                </template>
               </div>
               <div class="columns">
                 <div class="column">
@@ -220,7 +210,7 @@
                 <div class="column">
                   <nuxt-link to="/products" class="button is-fullwidth"
                     ><i class="fa fa-backward mr-1" aria-hidden="true"></i
-                    >サンプルオーダーにもどる</nuxt-link
+                    >商品一覧にもどる</nuxt-link
                   >
                 </div>
                 <div class="column">
@@ -263,6 +253,7 @@ export default {
           '郵便番号形式ではありません。ハイフン（-）ありで半角数字のみ入力してください。',
       },
       editOrder: {},
+      emailConfirm: '',
       productOptions: {},
     }
   },
@@ -274,6 +265,18 @@ export default {
     ...mapGetters({
       productItemInCart: 'products/productItemInCart',
     }),
+    isLogin() {
+      return this.$auth.loggedIn
+    },
+    loginUserInfo() {
+      if (this.$auth.loggedIn) {
+        const { name, sub, email } = this.$auth.$state.user
+        const type = sub.split('|')[0]
+        return { name, type, email }
+      }
+
+      return { name: '', type: '', email: '' }
+    },
     cartItems() {
       const result = this.productItemInCart(this.cart).filter((i) => i)
       return result
@@ -383,6 +386,12 @@ export default {
   beforeDestroy() {
     this.editOrder = {}
   },
+  mounted() {
+    if (this.loginUserInfo.email) {
+      this.editOrder.email = this.loginUserInfo.email
+      this.emailConfirm = this.loginUserInfo.email
+    }
+  },
   methods: {
     ...mapMutations({
       setOrder: 'order_info/setOrder',
@@ -393,6 +402,16 @@ export default {
       this.$router.push({
         path: 'order_payment',
       })
+    },
+    authLogin() {
+      this.$auth.loginWith('auth0')
+    },
+    authLogout() {
+      // TODO: 前回ログインした情報全てクリア
+      this.editOrder.email = ''
+      this.emailConfirm = ''
+      this.$auth.logout()
+      this.$auth.reset()
     },
   },
 }
