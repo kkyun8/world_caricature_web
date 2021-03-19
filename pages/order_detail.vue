@@ -104,12 +104,19 @@
                   </b-field>
                 </div>
                 <div class="column is-3">
-                  <b-field ref="email-field" label="メール確認">
+                  <b-field
+                    ref="email-confirm-field"
+                    :type="{ 'is-danger': emailConfirm !== editOrder.email }"
+                    :message="
+                      emailConfirm !== editOrder.email
+                        ? validateMsg.emailConfirm
+                        : ''
+                    "
+                    label="メール確認"
+                  >
                     <b-input
                       v-model="emailConfirm"
                       placeholder="mail@mail.com"
-                      type="email"
-                      required
                       expanded
                       :disabled="isLogin"
                     ></b-input>
@@ -251,10 +258,22 @@ export default {
         phone: 'ハイフン（-）なしで半角数字のみ入力してください。',
         postalCode:
           '郵便番号形式ではありません。ハイフン（-）ありで半角数字のみ入力してください。',
+        emailConfirm: 'メールアドレスが一致しておりません。',
       },
+      fieldNameList: [
+        'name-kanzi-field',
+        'name-furigana-field',
+        'email-field',
+        'email-confirm-field',
+        'cell-phone-number-field',
+        'postal-code-field',
+        'address-1-field',
+        'address-2-field',
+      ],
       editOrder: {},
       emailConfirm: '',
       productOptions: {},
+      isTermChecked: false,
     }
   },
   computed: {
@@ -322,6 +341,7 @@ export default {
         !this.editOrder.nameKanzi ||
         !this.editOrder.nameFurigana ||
         !this.editOrder.email ||
+        !this.emailConfirm ||
         !this.editOrder.cellPhoneNumber ||
         !this.editOrder.postalCode ||
         !this.editOrder.address1 ||
@@ -329,25 +349,9 @@ export default {
       if (inputs) {
         return true
       }
-      const nameKanziField = checkFmsg(this.$refs['name-kanzi-field'])
-      const nameFuriganaField = checkFmsg(this.$refs['name-furigana-field'])
-      const emailField = checkFmsg(this.$refs['email-field'])
-      const cellPhoneNumberField = checkFmsg(
-        this.$refs['cell-phone-number-field']
-      )
-      const postalCodeField = checkFmsg(this.$refs['postal-code-field'])
-      const addressOneField = checkFmsg(this.$refs['address-1-field'])
-      const addressTwoField = checkFmsg(this.$refs['address-2-field'])
 
-      const result =
-        nameKanziField ||
-        nameFuriganaField ||
-        emailField ||
-        cellPhoneNumberField ||
-        addressOneField ||
-        postalCodeField ||
-        addressOneField ||
-        addressTwoField
+      const result = this.fieldNameList.some((f) => checkFmsg(this.$refs[f]))
+
       return result
     },
   },
@@ -402,6 +406,9 @@ export default {
       this.$router.push({
         path: 'order_payment',
       })
+    },
+    setTermChecked(value) {
+      this.isTermChecked = value
     },
     authLogin() {
       this.$auth.loginWith('auth0')
