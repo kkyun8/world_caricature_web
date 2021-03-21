@@ -85,13 +85,13 @@ export default {
       auth0: {
         domain: process.env.AUTH_DOMAIN,
         client_id: process.env.AUTH_CLIENT_ID,
-        logoutRedirectUri: '/order_detail',
+        logoutRedirectUri: '/order_create',
       },
     },
     redirect: {
-      login: '/order_detail',
-      logout: '/order_detail',
-      home: '/order_detail',
+      login: '/order_create',
+      logout: '/order_create',
+      home: '/order_create',
       callback: '/callback', // コールバックURL
     },
   },

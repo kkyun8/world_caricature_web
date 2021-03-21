@@ -229,7 +229,7 @@ export default {
     createOrder() {
       if (this.cartCount === 0) return
       this.$router.push({
-        path: 'order_detail',
+        path: 'order_create',
       })
       this.isCartModalActive = false
     },

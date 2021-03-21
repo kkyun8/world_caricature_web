@@ -1,5 +1,5 @@
 <template>
-  <div id="order_detail">
+  <div id="order_create">
     <div class="container">
       <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
         <ul>
@@ -39,7 +39,7 @@
               <div
                 class="column is-three-fifths is-offset-one-fifth has-text-centered mb-6"
               >
-                <div class="mt-6 mb-6">
+                <div class="my-6">
                   <div class="border-bottom-line">
                     <span>作品価格合計</span>
                     <span>{{ productPrice }}円</span>
@@ -214,6 +214,12 @@
                 </div>
               </div>
               <div class="columns">
+                <TermsOfService
+                  :is-term-checked="isTermChecked"
+                  @setTermChecked="setTermChecked()"
+                />
+              </div>
+              <div class="columns mt-6">
                 <div class="column">
                   <nuxt-link to="/products" class="button is-fullwidth"
                     ><i class="fa fa-backward mr-1" aria-hidden="true"></i
@@ -225,10 +231,10 @@
                     type="is-primary"
                     expanded
                     :disabled="isNotValidated"
-                    @click="createOrderPayment()"
+                    @click="createOrder()"
                   >
-                    <i class="fa fa-credit-card mr-1" aria-hidden="true"></i
-                    >注文を作成して支払いに進む
+                    <i class="fa fa-file-import mr-1" aria-hidden="true"></i
+                    >注文確認画面に進む
                   </b-button>
                 </div>
               </div>
@@ -243,11 +249,13 @@
 <script>
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import ProductCollapses from '~/components/ProductCollapses'
+import TermsOfService from '~/components/TermsOfService'
 
 export default {
-  name: 'OrderDetail',
+  name: 'OrderCreate',
   components: {
     ProductCollapses,
+    TermsOfService,
   },
   data() {
     return {
@@ -298,6 +306,9 @@ export default {
     },
     cartItems() {
       const result = this.productItemInCart(this.cart).filter((i) => i)
+      if (result.length === 0) {
+        this.isNoItemAlert()
+      }
       return result
     },
     productPrice() {
@@ -345,7 +356,8 @@ export default {
         !this.editOrder.cellPhoneNumber ||
         !this.editOrder.postalCode ||
         !this.editOrder.address1 ||
-        !this.editOrder.address2
+        !this.editOrder.address2 ||
+        !this.isTermChecked
       if (inputs) {
         return true
       }
@@ -400,21 +412,29 @@ export default {
     ...mapMutations({
       setOrder: 'order_info/setOrder',
     }),
-    createOrderPayment() {
-      // TODO: alert & cart delete
-      this.setOrder(this.editOrder)
-      this.$router.push({
-        path: 'order_payment',
+    isNoItemAlert() {
+      this.$buefy.dialog.alert({
+        message: 'カートに商品がありません。',
+        onConfirm: () =>
+          this.$router.push({
+            path: '/',
+          }),
       })
     },
-    setTermChecked(value) {
-      this.isTermChecked = value
+    createOrder() {
+      this.editOrder.price = this.totalPrice
+      this.setOrder(this.editOrder)
+      this.$router.push({
+        path: 'order_confirm',
+      })
+    },
+    setTermChecked() {
+      this.isTermChecked = !this.isTermChecked
     },
     authLogin() {
       this.$auth.loginWith('auth0')
     },
     authLogout() {
-      // TODO: 前回ログインした情報全てクリア
       this.editOrder.email = ''
       this.emailConfirm = ''
       this.$auth.logout()
