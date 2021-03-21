@@ -23,7 +23,7 @@
                   />
                 </figure>
               </article>
-              <div class="box mt-6 mb-6">
+              <div class="box my-6">
                 <article class="media">
                   <div class="media-left">
                     <figure class="image is-128x128">

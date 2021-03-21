@@ -4,7 +4,7 @@
     <div class="container">
       <section class="main-content columns">
         <div class="container column is-11 mb-6">
-          <div id="search_form" class="mt-6 mb-6">
+          <div id="search_form" class="my-6">
             <b-message type="is-warning">
               作家のスケジュール状況によりますが、商品が届くのは注文完了された日から２週間後です。
             </b-message>

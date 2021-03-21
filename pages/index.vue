@@ -126,7 +126,7 @@
       <section id="features" class="sectionf">
         <div class="container">
           <h1 class="title has-text-centered">注文の流れ</h1>
-          <hr class="rounded mt-6 mb-6" />
+          <hr class="rounded my-6" />
           <div class="columns reverse-row-order">
             <div class="column">
               <h1 class="title">商品を選ぶ</h1>
@@ -214,7 +214,7 @@
         </div>
       </section>
       <section id="sample-images">
-        <div class="container mt-6 mb-6">
+        <div class="container my-6">
           <h1 class="title has-text-centered">サンプルイメージ</h1>
           <hr class="rounded" />
           <b-carousel
@@ -247,9 +247,9 @@
           </b-carousel>
         </div>
       </section>
-      <section id="artist-contact" class="mt-6 mb-6">
+      <section id="artist-contact" class="my-6">
         <div class="container">
-          <h1 class="title has-text-centered mt-6 mb-6">アーティスト募集</h1>
+          <h1 class="title has-text-centered my-6">アーティスト募集</h1>
           <div class="columns">
             <div class="column">
               <div class="p-4">

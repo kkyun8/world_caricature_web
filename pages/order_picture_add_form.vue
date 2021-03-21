@@ -1,7 +1,7 @@
 <template>
   <div class="container is-fullhd">
     <section v-if="isActivePictureAddFormKey">
-      <div class="content box mt-6 mb-6">
+      <div class="content box my-6">
         <h2>写真アップロードフォーム</h2>
         <b-message type="is-info">
           <p>写真アップロードで顔認証を行います。…</p>
