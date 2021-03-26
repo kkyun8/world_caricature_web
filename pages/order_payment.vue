@@ -76,16 +76,6 @@
                       </div>
                     </div>
                   </div>
-                  <footer class="card-footer">
-                    <div class="card-footer-item">
-                      <nuxt-link
-                        to="/order_detail"
-                        class="button is-fullwidth is-primary"
-                        ><i class="fa fa-backward mr-1" aria-hidden="true"></i
-                        >注文情報を修正する</nuxt-link
-                      >
-                    </div>
-                  </footer>
                 </div>
               </div>
             </div>

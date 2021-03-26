@@ -172,7 +172,7 @@ export default {
       if (this.cartItems) {
         price = this.cartItems.reduce((a, i) => {
           if (i) {
-            a = a + i.price.N
+            a = a + parseInt(i.price.N, 10)
             return a
           }
         }, 0)

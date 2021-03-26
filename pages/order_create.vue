@@ -391,7 +391,7 @@ export default {
     const premiumWrapping = false
     const result = this.cartItems.reduce((a, c) => {
       const { id } = c
-      a[id] = {
+      a[id.S] = {
         flameSize,
         premiumWrapping,
       }
@@ -422,6 +422,7 @@ export default {
       })
     },
     createOrder() {
+      this.editOrder.productOptions = this.productOptions
       this.editOrder.price = this.totalPrice
       this.setOrder(this.editOrder)
       this.$router.push({

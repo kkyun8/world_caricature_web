@@ -31,10 +31,10 @@
           値段：{{ product.price.N }}円 作業人数：{{
             product.number_of_people.N
           }}名
-          <template v-if="productOptions[product.id]">
+          <template v-if="productOptions[product.id.S]">
             <b-field>
               <b-select
-                v-model="productOptions[product.id].flameSize"
+                v-model="productOptions[product.id.S].flameSize"
                 placeholder="フレームサイズ"
               >
                 <option :value="'M'">M</option>
@@ -43,7 +43,7 @@
             </b-field>
             <b-field>
               <b-select
-                v-model="productOptions[product.id].premiumWrapping"
+                v-model="productOptions[product.id.S].premiumWrapping"
                 placeholder="プレミアムラッピングの有無"
               >
                 <option :value="true">あり</option>
