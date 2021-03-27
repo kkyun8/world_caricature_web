@@ -280,6 +280,7 @@ export default {
       ],
       editOrder: {},
       emailConfirm: '',
+      // TODO: price反映が遅い
       productOptions: {},
       isTermChecked: false,
     }
@@ -426,7 +427,7 @@ export default {
       this.editOrder.price = this.totalPrice
       this.setOrder(this.editOrder)
       this.$router.push({
-        path: 'order_confirm',
+        path: '/order/confirm',
       })
     },
     setTermChecked() {

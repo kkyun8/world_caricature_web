@@ -2,7 +2,10 @@
   <div class="order_payment">
     <div class="container">
       <section class="main-content columns mb-6">
-        <div class="container column is-10 mb-6">
+        <div v-if="!isActiveKey" class="container column is-10 mb-6">
+          無効なURLです。URLを確認してください。
+        </div>
+        <div v-else class="container column is-10 mb-6">
           <div class="containar is-max-desktop">
             <div class="content"><h2>注文情報確認</h2></div>
             <div class="columns">
@@ -20,10 +23,9 @@
               </div>
               <div class="column">
                 <product-collapses :products="cartItems" />
-                <!-- TODO: -->
                 <div class="card mt-6">
                   <div class="card-content">
-                    <div class="content">
+                    <div v-if="order" class="content">
                       <h3>注文情報</h3>
                       <div class="order-info-row">
                         <div class="border-bottom-line">
@@ -134,15 +136,16 @@
                           <p id="payment-errors-cvv" class="help is-danger"></p>
                         </div>
                       </div>
-
-                      <b-button
-                        id="sq-creditcard"
-                        type="is-primary"
-                        outlined
-                        expanded
-                        @click="onGetCardNonce($event)"
-                        >¥{{ order.price }} 決済</b-button
-                      >
+                      <template v-if="order.price">
+                        <b-button
+                          id="sq-creditcard"
+                          type="is-primary"
+                          outlined
+                          expanded
+                          @click="onGetCardNonce($event)"
+                          >¥{{ order.price }} 決済</b-button
+                        >
+                      </template>
                     </div>
                   </div>
                 </div>
@@ -166,14 +169,14 @@
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
-import ProductCollapses from '~/components/ProductCollapses'
+// import ProductCollapses from '~/components/ProductCollapses'
 moment.locale('ja')
 
 export default {
-  name: 'OrderPayment',
-  components: {
-    ProductCollapses,
-  },
+  layout: 'only_footer',
+  // components: {
+  //   ProductCollapses,
+  // },
   data() {
     return {
       reserveDates: [
@@ -186,6 +189,7 @@ export default {
         Cvv: [],
         ExpirationDate: [],
       },
+      isActiveKey: false,
     }
   },
   computed: {
@@ -214,14 +218,28 @@ export default {
       return result
     },
   },
-  mounted() {
-    this.setPaymentForm()
-  },
   beforeDestroy() {
     this.paymentForm.destroy()
   },
+  mounted() {
+    const key = this.$route.params.key
+    if (!key) {
+      return (this.isActiveKey = false)
+    }
+    const getOrderItemFromUrlKey = this.getOrderItemFromUrlKey({
+      key,
+    })
+    this.callApis([getOrderItemFromUrlKey])
+
+    getOrderItemFromUrlKey
+      .then(() => {
+        this.isActiveKey = true
+        this.setPaymentForm()
+      })
+      .catch(() => (this.isActiveKey = false))
+  },
   methods: {
-    ...mapActions('order_info', ['putOrderItem']),
+    ...mapActions('order_info', ['getOrderItemFromUrlKey', 'putOrderItem']),
     ...mapMutations({
       setOrder: 'order_info/setOrder',
       setIsSqPaymentLoading: 'order_payment/setIsSqPaymentLoading',

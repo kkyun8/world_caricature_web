@@ -148,7 +148,7 @@ export default {
   },
   created() {
     this.isLoading = true
-    const getProductItem = this.getProductItem({ id: this.$route.query.id })
+    const getProductItem = this.getProductItem({ id: this.$route.params.id })
     this.callApis([getProductItem])
   },
   methods: {

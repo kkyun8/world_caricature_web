@@ -18,35 +18,34 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+// import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
-  name: 'PaymentComplete',
   data() {
     return {
       isNoticeModalActive: true,
     }
   },
-  computed: {
-    ...mapState({
-      targetOrder: (state) => state.order_info.targetOrder,
-    }),
-  },
-  created() {
-    this.isLoading = true
-    // TODO: order id
-    const readOrder = this.readOrder({ id: this.$route.query.id })
-    this.callApis([readOrder])
-  },
-  beforeDestroy() {
-    this.setTargetOrder(null)
-  },
-  methods: {
-    ...mapActions('order_info', ['readOrder']),
-    ...mapMutations({
-      setTargetOrder: 'order_info/setTargetOrder',
-    }),
-  },
+  // computed: {
+  //   ...mapState({
+  //     targetOrder: (state) => state.order_info.targetOrder,
+  //   }),
+  // },
+  // created() {
+  //   this.isLoading = true
+  //   // TODO: order id
+  //   const readOrder = this.readOrder({ id: this.$route.query.id })
+  //   this.callApis([readOrder])
+  // },
+  // beforeDestroy() {
+  //   this.setTargetOrder(null)
+  // },
+  // methods: {
+  //   ...mapActions('order_info', ['readOrder']),
+  //   ...mapMutations({
+  //     setTargetOrder: 'order_info/setTargetOrder',
+  //   }),
+  // },
 }
 </script>
 

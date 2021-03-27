@@ -260,20 +260,14 @@ export default {
   },
   created() {
     // check key
-    const getOrderItemFromPictureUrlKey = this.getOrderItemFromPictureUrlKey({
-      key: this.$route.query.key,
+    const getOrderItemFromUrlKey = this.getOrderItemFromUrlKey({
+      key: this.$route.params.key,
     })
-    const readOrder = this.readOrder({
-      // TODO: PictureUrlKey param
-      // orderNumber: '',
-      // email: '',
-    })
-    this.callApis([getOrderItemFromPictureUrlKey, readOrder])
+    this.callApis([getOrderItemFromUrlKey])
   },
   methods: {
-    ...mapActions('order_info', ['readOrder']),
     ...mapActions('order_info', [
-      'getOrderItemFromPictureUrlKey',
+      'getOrderItemFromUrlKey',
       'readOrder',
       'updateOrder',
     ]),

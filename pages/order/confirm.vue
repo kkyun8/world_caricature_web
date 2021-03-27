@@ -176,7 +176,7 @@ export default {
             this.setCart([])
             this.setLocalStorage(this.cartLocalStorageKey)
             this.$router.push({
-              path: 'order_complete',
+              path: '/order/complete',
             })
           })
         },

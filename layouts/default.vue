@@ -17,7 +17,7 @@
         <nuxt-link to="/products" class="navbar-item"
           >商品一覧から注文する</nuxt-link
         >
-        <nuxt-link to="/order_search" class="navbar-item">注文確認</nuxt-link>
+        <nuxt-link to="/order/search" class="navbar-item">注文確認</nuxt-link>
         <nuxt-link :to="{ path: '/#artist-contact' }" class="navbar-item"
           >アーティスト募集</nuxt-link
         >
@@ -229,7 +229,7 @@ export default {
     createOrder() {
       if (this.cartCount === 0) return
       this.$router.push({
-        path: 'order_create',
+        path: '/order',
       })
       this.isCartModalActive = false
     },

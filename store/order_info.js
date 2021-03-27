@@ -21,7 +21,7 @@ export const state = () => ({
     isSendEmail: 'やりとり方法',
   },
   defaultOrder: {
-    productOptions: [],
+    productOptions: {},
     orderNumber: '',
     status: 1,
     nameKanzi: '',
@@ -35,8 +35,8 @@ export const state = () => ({
     comment: '',
     isSendEmail: false,
     isSendLine: false,
-    pictureUrlKey: '',
-    hasPictures: false,
+    urlKey: '',
+    hasPicture: false,
     price: 0,
     idempotencyKey: '',
     paymentStatus: 0,
@@ -89,16 +89,16 @@ export const actions = {
     return result
   },
 
-  async getOrderItemFromPictureUrlKey({ commit }, values) {
+  async getOrderItemFromUrlKey({ commit }, values) {
     const params = {
       TableName,
       Key: {
-        picture_url_key: { S: values.pictureUrlKey },
+        url_key: { S: values.urlKey },
       },
     }
     const result = this.$aws_ddb().getItem(params).promise()
     await result.then((res) => {
-      commit('setTargetOrder', res.Item)
+      commit('setOrder', res.Item)
     })
     return result
   },

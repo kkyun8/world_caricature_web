@@ -41,8 +41,7 @@ export default {
   methods: {
     clickSampleDetail() {
       this.$router.push({
-        path: 'product_detail',
-        query: { id: this.product.id.S },
+        path: `products/${this.product.id.S}`,
       })
     },
   },

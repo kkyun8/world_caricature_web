@@ -40,7 +40,7 @@ export default {
   methods: {
     clickSave() {
       const data = 'data'
-      this.$router.push({ path: 'order_create', query: { data } })
+      this.$router.push({ path: '/order', query: { data } })
       this.$emit('closeModal')
     },
     clickCancle() {
