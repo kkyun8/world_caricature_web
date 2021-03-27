@@ -1,5 +1,5 @@
 <template>
-  <div id="order_complete">order_complete</div>
+  <section>注文を確定しました。</section>
 </template>
 
 <script>
