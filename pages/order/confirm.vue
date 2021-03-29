@@ -166,7 +166,7 @@ export default {
           values.orderStatus = status.label.S
 
           const keyDate = new Date().getTime().toString()
-          const random = crypto.randomBytes(7)
+          const random = crypto.randomBytes(7).toString('hex')
           values.urlKey = keyDate + random
 
           const putOrderItem = this.putOrderItem(values)
