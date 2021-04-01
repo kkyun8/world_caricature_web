@@ -22,58 +22,53 @@
                 </b-datepicker>
               </div>
               <div class="column">
-                <product-collapses :products="cartItems" />
                 <div class="card mt-6">
                   <div class="card-content">
                     <div v-if="order" class="content">
                       <h3>注文情報</h3>
                       <div class="order-info-row">
                         <div class="border-bottom-line">
-                          {{ orderLabelObj['nameKanzi'] }}:{{ order.nameKanzi }}
+                          {{ orderLabelObj['nameKanzi'] }}:{{
+                            order.name_kanzi.S
+                          }}
                         </div>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
                           {{ orderLabelObj['nameFurigana'] }}:{{
-                            order.nameFurigana
+                            order.name_furigana.S
                           }}
                         </span>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
-                          {{ orderLabelObj['isSendEmail'] }}:
-                          <template v-if="order.isSendEmail">
-                            {{ orderLabelObj['email'] }} {{ order.email }}<br />
-                          </template>
-                          <template v-else>
-                            {{ orderLabelObj['lineId'] }} {{ order.lineId }}
-                          </template>
+                          {{ orderLabelObj['email'] }}: {{ order.email.S }}
                         </span>
                         <span class="border-bottom-line">
                           {{ orderLabelObj['cellPhoneNumber'] }}:
-                          {{ order.cellPhoneNumber }}
+                          {{ order.cell_phone_number.S }}
                         </span>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
                           {{ orderLabelObj['postalCode'] }}:{{
-                            order.postalCode
+                            order.postal_code.S
                           }}
                         </span>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
-                          {{ orderLabelObj['address1'] }}:{{ order.address1 }}
+                          {{ orderLabelObj['address1'] }}:{{ order.address1.S }}
                         </span>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
-                          {{ orderLabelObj['address2'] }}:{{ order.address2 }}
+                          {{ orderLabelObj['address2'] }}:{{ order.address2.S }}
                         </span>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
-                          {{ orderLabelObj['comment'] }}:{{ order.comment }}
+                          {{ orderLabelObj['comment'] }}:{{ order.comment.S }}
                         </span>
                       </div>
                     </div>
@@ -143,9 +138,27 @@
                           outlined
                           expanded
                           @click="onGetCardNonce($event)"
-                          >¥{{ order.price }} 決済</b-button
+                          >¥{{ order.price.N }} 決済</b-button
                         >
                       </template>
+                      <span
+                        v-for="(ecn, iecn) in paymentErrors.creditCardNumber"
+                        :key="`iecn${iecn}`"
+                        class="has-text-danger"
+                        >{{ ecn }}</span
+                      >
+                      <span
+                        v-for="(ecv, iecv) in paymentErrors.cvv"
+                        :key="`iecv${iecv}`"
+                        class="has-text-danger"
+                        >{{ ecv }}</span
+                      >
+                      <span
+                        v-for="(ped, iped) in paymentErrors.expirationDate"
+                        :key="`iped${iped}`"
+                        class="has-text-danger"
+                        >{{ ped }}</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -169,14 +182,10 @@
 <script>
 import { mapState, mapMutations, mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
-// import ProductCollapses from '~/components/ProductCollapses'
 moment.locale('ja')
 
 export default {
   layout: 'only_footer',
-  // components: {
-  //   ProductCollapses,
-  // },
   data() {
     return {
       reserveDates: [
@@ -185,23 +194,23 @@ export default {
       ],
       isPaymentLoading: false,
       paymentErrors: {
-        CreditCardNumber: [],
-        Cvv: [],
-        ExpirationDate: [],
+        creditCardNumber: [],
+        cvv: [],
+        expirationDate: [],
       },
       isActiveKey: false,
     }
   },
   computed: {
     ...mapState({
-      cart: (state) => state.cart.cart,
+      products: (state) => state.products.products,
       order: (state) => state.order_info.order,
       orderLabelObj: (state) => state.order_info.orderLabelObj,
+      orderStatus: (state) => state.order_master.orderStatus,
+      orderTypes: (state) => state.order_master.orderTypes,
       isSqPaymentLoading: (state) => state.order_payment.isSqPaymentLoading,
     }),
-    // TODO: order.productIds, not cart
     ...mapGetters({
-      productItemInCart: 'products/productItemInCart',
       createOrderId: 'order_info/createOrderId',
     }),
     reserveDateJp() {
@@ -213,10 +222,6 @@ export default {
 
       return `${f} ~ ${t}`
     },
-    cartItems() {
-      const result = this.productItemInCart(this.cart)
-      return result
-    },
   },
   beforeDestroy() {
     this.paymentForm.destroy()
@@ -226,9 +231,7 @@ export default {
     if (!key) {
       return (this.isActiveKey = false)
     }
-    const getOrderItemFromUrlKey = this.getOrderItemFromUrlKey({
-      key,
-    })
+    const getOrderItemFromUrlKey = this.getOrderItemFromUrlKey(key)
     this.callApis([getOrderItemFromUrlKey])
 
     getOrderItemFromUrlKey
@@ -238,8 +241,17 @@ export default {
       })
       .catch(() => (this.isActiveKey = false))
   },
+  created() {
+    this.isLoading = true
+    const scanProducts = this.scanProducts()
+    const scanOrderItemLabels = this.scanOrderItemLabels()
+    this.callApis([scanProducts, scanOrderItemLabels])
+  },
   methods: {
-    ...mapActions('order_info', ['getOrderItemFromUrlKey', 'putOrderItem']),
+    ...mapActions('products', ['scanProducts']),
+    ...mapActions('order_info', ['getOrderItemFromUrlKey']),
+    ...mapActions('order_master', ['scanOrderItemLabels']),
+    ...mapActions('order_payment', ['createPayment']),
     ...mapMutations({
       setOrder: 'order_info/setOrder',
       setIsSqPaymentLoading: 'order_payment/setIsSqPaymentLoading',
@@ -283,69 +295,46 @@ export default {
         },
         postalCode: false,
         callbacks: {
-          async cardNonceResponseReceived(errors, nonce, cardData) {
+          cardNonceResponseReceived(errors, nonce, cardData) {
             const t = th
+
+            t.paymentErrors.creditCardNumber = []
+            t.paymentErrors.cvv = []
+            t.paymentErrors.expirationDate = []
             t.isLoading = true
-            const amount = t.order.price
+            const amount = t.order.price.N
             const currency = 'JPY'
             const order = t.order
-            // card error
             // TODO: set english to japanese
             if (errors) {
-              errors.forEach(function (error) {
-                console.error('  ' + error.message)
-              })
+              t.paymentErrors.creditCardNumber = errors
+                .filter((e) => (e.field ? e.field === 'cardNumber' : false))
+                .map((e) => e.message)
+              t.paymentErrors.cvv = errors
+                .filter((e) => (e.field ? e.field === 'cvv' : false))
+                .map((e) => e.message)
+              t.paymentErrors.expirationDate = errors
+                .filter((e) => (e.field ? e.field === 'expirationDate' : false))
+                .map((e) => e.message)
+
               t.isLoading = false
               return
             }
-
-            await fetch('/process-payment', {
-              method: 'POST',
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                nonce,
-                amount,
-                currency,
-                order,
-              }),
+            const createPayment = t.createPayment({
+              nonce,
+              amount,
+              currency,
+              order,
             })
-              .catch((err) => {
-                console.log(err)
-              })
-              .then((response) => {
-                if (!response.ok) {
-                  return response
-                    .text()
-                    .then((errorInfo) => Promise.reject(errorInfo))
-                }
-                return response.text()
-              })
-              .then((data) => {
-                console.log(data)
-                // TODO:
-                // add order and payment result
-                const values = JSON.parse(JSON.stringify(t.order))
-                values.orderId = t.createOrderId()
-                values.orderStatus = '決済済み'
-
-                const putOrderItem = t.putOrderItem(values)
-                t.callApis([putOrderItem])
-                putOrderItem.then(() => {
-                  t.$router.push({
-                    path: 'payment_complete',
-                    query: { id: values.orderId },
-                  })
+            t.callApis([createPayment])
+            createPayment
+              .then((res) => {
+                t.$router.push({
+                  path: '/payment/complete',
                 })
               })
-              .catch((err) => {
-                console.log(err)
-              })
-              .finally(() => {
-                t.isLoading = false
-              })
+              // TODO: error
+              .catch((err) => console.log(err))
           },
         },
       })

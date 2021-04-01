@@ -107,11 +107,11 @@ export default {
     ],
   },
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: { baseURL: 'http://localhost:3333' },
+  axios: {},
   // TODO: url 変更
   proxy: {
-    'http://localhost:3000/process-payment': {
-      target: 'http://localhost:4000/',
+    '/process-payment': {
+      target: 'http://localhost:4000',
     },
     'http://localhost:3000/face-api': {
       target: 'http://localhost:4000/',

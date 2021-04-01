@@ -2,7 +2,9 @@ import crypto from 'crypto'
 import moment from 'moment'
 
 const TableName = 'orders'
-
+const getQueryItem = (items) => {
+  return items.length > 0 ? items[0] : null
+}
 export const state = () => ({
   orderLabelObj: {
     orderNumber: '注文番号',
@@ -83,22 +85,26 @@ export const actions = {
 
     const result = this.$aws_ddb().query(params).promise()
     await result.then((res) => {
-      const item = res.Items.length > 0 ? res.Items[0] : null
+      const item = getQueryItem(res.Items)
       commit('setOrder', item)
     })
     return result
   },
-
-  async getOrderItemFromUrlKey({ commit }, values) {
+  // TODO: payment picture options
+  async getOrderItemFromUrlKey({ commit }, key) {
     const params = {
-      TableName,
-      Key: {
-        url_key: { S: values.urlKey },
+      ExpressionAttributeValues: {
+        ':k': { S: key },
       },
+      TableName,
+      IndexName: 'url-key-index',
+      KeyConditionExpression: 'url_key = :k',
     }
-    const result = this.$aws_ddb().getItem(params).promise()
+
+    const result = this.$aws_ddb().query(params).promise()
     await result.then((res) => {
-      commit('setOrder', res.Item)
+      const item = getQueryItem(res.Items)
+      commit('setOrder', item)
     })
     return result
   },
@@ -141,8 +147,41 @@ export const actions = {
     })
     return result
   },
-
-  // TODO: updateOrderItem
+  /**
+   *
+   * @param {*} param0
+   * @param {*} params
+   * @returns
+   */
+  // TODO:
+  async updateOrderItem({ commit }, values) {
+    const params = {
+      ExpressionAttributeNames: {
+        '#OS': 'order_status',
+        // TODO:
+        // '#IK': 'idempotency_key',
+        // '#POI': 'payment_order_id',
+        // '#PST': 'payment_source_type',
+      },
+      ExpressionAttributeValues: {
+        ':os': {
+          S: 'values.update_order_status',
+        },
+      },
+      Key: {
+        order_id: {
+          S: values.order_id.S,
+        },
+      },
+      TableName,
+      // UpdateExpression: 'SET #OS = :os, #IK = :ik, #POI = :poi, #PST = :pst',
+    }
+    const result = this.$aws_ddb().updateItem(params).promise()
+    await result.then((res) => {
+      commit('setProduct', res.Item)
+    })
+    return result
+  },
   async updateOrder({ commit }, { params }) {
     // TODO: mock url
     const result = await this.$axios.$put('/orders', { params })
