@@ -125,7 +125,7 @@ export default {
         const product = this.products.find((p) => p.id.S === k)
 
         const value = Object.assign(product, this.order.productOptions[k])
-        const title = value.title.S
+        const title = value.title
         const flameSize = value.flameSize
         const premiumWrapping = value.premiumWrapping ? 'あり' : 'なし'
 
@@ -151,8 +151,10 @@ export default {
               const [k, v] = o
               const value = {
                 M: {
-                  flameSize: { S: v.flameSize },
-                  premiumWrapping: { BOOL: v.premiumWrapping },
+                  title: { S: v.title },
+                  number_of_people: { N: v.numberOfPeople },
+                  flame_size: { S: v.flameSize },
+                  premium_wrapping: { BOOL: v.premiumWrapping },
                 },
               }
               a[k] = value

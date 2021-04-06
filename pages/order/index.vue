@@ -391,8 +391,11 @@ export default {
     const flameSize = 'M'
     const premiumWrapping = false
     const result = this.cartItems.reduce((a, c) => {
-      const { id } = c
+      const { id, title, price } = c
       a[id.S] = {
+        title: title.S,
+        price: price.N,
+        numberOfPeople: c.number_of_people.N,
         flameSize,
         premiumWrapping,
       }
