@@ -113,8 +113,8 @@ export default {
     '/process-payment': {
       target: 'http://localhost:4000',
     },
-    'http://localhost:3000/face-api': {
-      target: 'http://localhost:4000/',
+    '/face-api': {
+      target: 'http://localhost:4000',
     },
     'http://localhost:3000/dynamodb': {
       target: 'http://localhost:8000 ',
