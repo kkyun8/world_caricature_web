@@ -1,4 +1,3 @@
-import crypto from 'crypto'
 import moment from 'moment'
 
 const TableName = 'orders'
@@ -48,7 +47,7 @@ export const state = () => ({
   // TODO: set calc price
   targetOrder: null,
   order: null,
-  isActivePictureAddFormKey: null,
+  isActiveUrlKey: null,
 })
 
 export const mutations = {
@@ -58,16 +57,21 @@ export const mutations = {
   setOrder(state, data) {
     state.order = data
   },
-  setIsActivePictureUrlKey(state, data) {
-    state.isActivePictureAddFormKey = data
+  setIsActiveUrlKey(state, data) {
+    state.isActiveUrlKey = data
   },
 }
 
 export const getters = {
   createOrderId: (state) => () => {
     const createDate = moment().format('YYYYMMDDHHmmss')
-    const code = crypto.randomBytes(5).toString('base64').substring(0, 5)
-    return createDate + code
+    const plusValue = []
+
+    while (plusValue.length < 5) {
+      plusValue.push(Math.floor(Math.random() * 10))
+    }
+
+    return createDate + plusValue.join('')
   },
 }
 
@@ -92,6 +96,8 @@ export const actions = {
   },
   // TODO: payment picture options
   async getOrderItemFromUrlKey({ commit }, key) {
+    // TODO: is_payment
+    // TODO: type payment picture
     const params = {
       ExpressionAttributeValues: {
         ':k': { S: key },
@@ -153,7 +159,6 @@ export const actions = {
    * @param {*} params
    * @returns
    */
-  // TODO:
   async updateOrderItem({ commit }, values) {
     const params = {
       ExpressionAttributeNames: {
@@ -174,17 +179,12 @@ export const actions = {
         },
       },
       TableName,
-      // UpdateExpression: 'SET #OS = :os, #IK = :ik, #POI = :poi, #PST = :pst',
+      UpdateExpression: 'SET #OS = :os, #IK = :ik, #POI = :poi, #PST = :pst',
     }
     const result = this.$aws_ddb().updateItem(params).promise()
     await result.then((res) => {
       commit('setProduct', res.Item)
     })
-    return result
-  },
-  async updateOrder({ commit }, { params }) {
-    // TODO: mock url
-    const result = await this.$axios.$put('/orders', { params })
     return result
   },
 }
