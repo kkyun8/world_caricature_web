@@ -287,7 +287,7 @@ export default {
   },
   computed: {
     ...mapState({
-      defaultOrder: (state) => state.order_info.defaultOrder,
+      defaultOrder: (state) => state.order.defaultOrder,
       cart: (state) => state.cart.cart,
     }),
     ...mapGetters({
@@ -414,7 +414,7 @@ export default {
   },
   methods: {
     ...mapMutations({
-      setOrder: 'order_info/setOrder',
+      setOrder: 'order/setOrder',
     }),
     isNoItemAlert() {
       this.$buefy.dialog.alert({

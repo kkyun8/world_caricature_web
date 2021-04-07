@@ -147,10 +147,10 @@ export default {
   },
   computed: {
     ...mapState({
-      order: (state) => state.order_info.order,
-      orderStatus: (state) => state.order_master.orderStatus,
-      orderTypes: (state) => state.order_master.orderTypes,
-      productionTimes: (state) => state.order_master.productionTimes,
+      order: (state) => state.order.order,
+      orderStatus: (state) => state.master.orderStatus,
+      orderTypes: (state) => state.master.orderTypes,
+      productionTimes: (state) => state.master.productionTimes,
     }),
     isNotValidated() {
       const checkFmsg = (field) => {
@@ -173,9 +173,9 @@ export default {
     this.setTargetOrder(null)
   },
   methods: {
-    ...mapActions('order_info', ['queryOrderOrderIdEmail']),
+    ...mapActions('order', ['queryOrderOrderIdEmail']),
     ...mapMutations({
-      setTargetOrder: 'order_info/setTargetOrder',
+      setTargetOrder: 'order/setTargetOrder',
     }),
     search() {
       if (this.isNotValidated) {

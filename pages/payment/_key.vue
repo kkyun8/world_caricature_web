@@ -1,5 +1,5 @@
 <template>
-  <div class="order_payment">
+  <div class="payment">
     <div class="container">
       <section class="main-content columns mb-6">
         <div v-if="!isActiveKey" class="container column is-10 mb-6">
@@ -204,14 +204,14 @@ export default {
   computed: {
     ...mapState({
       products: (state) => state.products.products,
-      order: (state) => state.order_info.order,
-      orderLabelObj: (state) => state.order_info.orderLabelObj,
-      orderStatus: (state) => state.order_master.orderStatus,
-      orderTypes: (state) => state.order_master.orderTypes,
-      isSqPaymentLoading: (state) => state.order_payment.isSqPaymentLoading,
+      order: (state) => state.order.order,
+      orderLabelObj: (state) => state.order.orderLabelObj,
+      orderStatus: (state) => state.master.orderStatus,
+      orderTypes: (state) => state.master.orderTypes,
+      isSqPaymentLoading: (state) => state.payment.isSqPaymentLoading,
     }),
     ...mapGetters({
-      createOrderId: 'order_info/createOrderId',
+      createOrderId: 'order/createOrderId',
     }),
     reserveDateJp() {
       if (this.reserveDates[0] === undefined) return ''
@@ -249,12 +249,12 @@ export default {
   },
   methods: {
     ...mapActions('products', ['scanProducts']),
-    ...mapActions('order_info', ['getOrderItemFromUrlKey']),
-    ...mapActions('order_master', ['scanOrderItemLabels']),
-    ...mapActions('order_payment', ['createPayment']),
+    ...mapActions('order', ['getOrderItemFromUrlKey']),
+    ...mapActions('master', ['scanOrderItemLabels']),
+    ...mapActions('payment', ['createPayment']),
     ...mapMutations({
-      setOrder: 'order_info/setOrder',
-      setIsSqPaymentLoading: 'order_payment/setIsSqPaymentLoading',
+      setOrder: 'order/setOrder',
+      setIsSqPaymentLoading: 'payment/setIsSqPaymentLoading',
     }),
     openLoading() {
       this.isPaymentLoading = true

@@ -191,7 +191,7 @@ export default {
   },
   methods: {
     ...mapActions('products', ['scanProducts']),
-    ...mapActions('order_master', ['scanOrderItemLabels']),
+    ...mapActions('master', ['scanOrderItemLabels']),
     ...mapMutations({
       setCart: 'cart/setCart',
     }),

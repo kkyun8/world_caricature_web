@@ -108,9 +108,9 @@ export default {
   },
   computed: {
     ...mapState({
-      productHashTags: (state) => state.order_master.productHashTags,
-      orderTypes: (state) => state.order_master.orderTypes,
-      productionTimes: (state) => state.order_master.productionTimes,
+      productHashTags: (state) => state.master.productHashTags,
+      orderTypes: (state) => state.master.orderTypes,
+      productionTimes: (state) => state.master.productionTimes,
       products: (state) => state.products.products,
     }),
     ...mapGetters('products', ['productTags']),
