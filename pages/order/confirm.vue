@@ -102,19 +102,18 @@
 </template>
 
 <script>
-import crypto from 'crypto'
 import { mapState, mapActions, mapGetters, mapMutations } from 'vuex'
 
 export default {
   computed: {
     ...mapState({
-      order: (state) => state.order_info.order,
-      orderStatus: (state) => state.order_master.orderStatus,
+      order: (state) => state.order.order,
+      orderStatus: (state) => state.master.orderStatus,
       products: (state) => state.products.products,
       cartLocalStorageKey: (state) => state.common.cartLocalStorageKey,
     }),
     ...mapGetters({
-      createOrderId: 'order_info/createOrderId',
+      createOrderId: 'order/createOrderId',
     }),
     orderProducts() {
       if (!this.order || !this.products) {
@@ -134,7 +133,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions('order_info', ['putOrderItem']),
+    ...mapActions('order', ['putOrderItem']),
     ...mapMutations({
       setCart: 'cart/setCart',
     }),
@@ -164,12 +163,17 @@ export default {
           )
           values.productOptions = options
 
-          const status = this.orderStatus.find((o) => o.label_id)
+          const status = this.orderStatus.find((o) => o.label_id === 1)
           values.orderStatus = status.label.S
 
           const keyDate = new Date().getTime().toString()
-          const random = crypto.randomBytes(7).toString('hex')
-          values.urlKey = keyDate + random
+
+          const random = []
+          while (random.length < 20) {
+            random.push(Math.floor(Math.random() * 10))
+          }
+
+          values.urlKey = keyDate + random.join('')
 
           const putOrderItem = this.putOrderItem(values)
           this.callApis([putOrderItem])
