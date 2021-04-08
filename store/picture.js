@@ -29,7 +29,6 @@ export const actions = {
         ':po': {
           M: values.productOptions,
         },
-        product_options: { M: values.productOptions },
       },
       Key: {
         order_id: {

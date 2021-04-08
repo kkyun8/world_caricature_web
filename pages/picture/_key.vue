@@ -1,6 +1,6 @@
 <template>
   <div class="container is-fullhd">
-    <section v-if="isActivePictureAddFormKey">
+    <section v-if="order">
       <div class="content box my-6">
         <h2>写真アップロードフォーム</h2>
         <b-message type="is-info">
@@ -15,28 +15,31 @@
           </p>
         </b-message>
         <h4>注文情報</h4>
-        <template v-if="targetOrder">
+        <template v-if="order">
           <div class="columns">
             <div class="column">
               <b-field label="名前（漢字）">
-                <b-input v-model="targetOrder.nameKanzi" disabled></b-input>
+                <b-input v-model="order.name_kanzi.S" disabled></b-input>
               </b-field>
             </div>
             <div class="column">
               <b-field label="名前（フリガナ）">
-                <b-input v-model="targetOrder.nameFurigana" disabled></b-input>
+                <b-input v-model="order.name_furigana.S" disabled></b-input>
               </b-field>
             </div>
           </div>
           <div class="columns">
             <div class="column">
               <b-field label="住所">
-                <b-input v-model="targetOrder.address1" disabled></b-input>
+                <b-input
+                  :value="`${order.address1.S} ${order.address2.S}`"
+                  disabled
+                ></b-input>
               </b-field>
             </div>
           </div>
         </template>
-        <!-- TODO: order info{{ targetOrder }} -->
+        <!-- TODO: order info{{ order }} -->
         <div class="has-text-centered">
           <b-field>
             <b-upload id="fileUpload" v-model="dropFiles" multiple drag-drop>
@@ -94,12 +97,16 @@
           <div v-if="uploadedFiles.length > 0" class="box m-3">
             <p class="is-size-4">アップロード写真から顔を選択してください。</p>
             <div
-              v-for="(o, oidx) in targetOrder.productOptions"
+              v-for="(o, oidx) in order.product_options.M"
               :key="`po-${oidx}`"
               class="box"
             >
-              作品名：{{ o.title }} 人数：{{ o.number_of_people }}名
-              <b-button @click="openProductImgModal(o.id)"
+              作品名：{{ o.M.title.S }} 人数：{{ o.M.number_of_people.N }}名
+              サイズ：{{ o.M.flame_size.N }} プレミアムラッピング有無：<template
+                v-if="o.M.premium_wrapping.BOOL"
+                >あり</template
+              ><template v-else>なし</template>
+              <b-button @click="openProductImgModal(oidx)"
                 >この商品に描いて欲しい顔選択</b-button
               >
               <div class="columns">
@@ -125,7 +132,7 @@
               type="is-primary"
               outlined
               :loading="isCheckUploadImagesLoading || isImageUploadLoading"
-              @click="updateOrderPicture"
+              @click="updatePicture"
               >写真を登録する</b-button
             >※写真登録後、払い戻しはできません。
             <div class="columns is-mobile">
@@ -208,26 +215,29 @@ export default {
   },
   computed: {
     ...mapState({
-      isActivePictureAddFormKey: (state) =>
-        state.order_info.isActivePictureAddFormKey,
-      // TODO: mock
-      targetOrder: (state) => state.order_info.targetOrder,
+      isActiveUrlKey: (state) => state.order.isActiveUrlKey,
+      order: (state) => state.order.order,
+      orderStatus: (state) => state.master.orderStatus,
     }),
-    orderNumber() {
-      // TODO: mock
-      if (this.targetOrder) {
-        return this.targetOrder.orderNumber
+    orderId() {
+      if (this.order) {
+        this.setIsActiveUrlKey(true)
+        return this.order.order_id.S
       }
       return ''
     },
     totalNumberOfPeople() {
-      if (!this.targetOrder) {
+      if (!this.order) {
         return 0
       }
-      const result = this.targetOrder.productOptions.reduce((a, p) => {
-        a = a + p.number_of_people
-        return a
-      }, 0)
+
+      const result = Object.values(this.order.product_options.M).reduce(
+        (a, p) => {
+          a = a + parseInt(p.M.number_of_people.N)
+          return a
+        },
+        0
+      )
       return result
     },
     maxFileLength() {
@@ -235,9 +245,9 @@ export default {
     },
   },
   watch: {
-    isActivePictureAddFormKey(newVal) {
+    isActiveUrlKey(newVal) {
       // indexに自動遷移
-      if (newVal != null && !newVal && !this.targetOrder) {
+      if (newVal != null && !newVal && !this.order) {
         setTimeout(() => {
           this.$router.push({
             path: '/',
@@ -245,34 +255,41 @@ export default {
         }, 3000)
       }
     },
-    targetOrder(newVal) {
+    order(newVal) {
       if (newVal) {
-        // TODO: mock
-        this.productImgs = newVal.productOptions.reduce((a, p) => {
-          a[p.id] = []
-          return a
-        }, {})
+        this.productImgs = Object.keys(newVal.product_options.M).reduce(
+          (a, p) => {
+            a[p] = []
+            return a
+          },
+          {}
+        )
       }
     },
   },
   beforeDestroy() {
-    this.setTargetOrder(null)
+    this.setOrder(null)
   },
-  created() {
+  async created() {
+    this.isLoading = true
     // check key
-    const getOrderItemFromUrlKey = this.getOrderItemFromUrlKey({
-      key: this.$route.params.key,
-    })
+    const getOrderItemFromUrlKey = this.getOrderItemFromUrlKey(
+      this.$route.params.key
+    )
     this.callApis([getOrderItemFromUrlKey])
+
+    await getOrderItemFromUrlKey.then(() => {
+      const scanOrderItemLabels = this.scanOrderItemLabels()
+      this.callApis([scanOrderItemLabels])
+    })
   },
   methods: {
-    ...mapActions('order_info', [
-      'getOrderItemFromUrlKey',
-      'readOrder',
-      'updateOrder',
-    ]),
+    ...mapActions('order', ['getOrderItemFromUrlKey', 'readOrder']),
+    ...mapActions('picture', ['uploadImages', 'updateOrderPicture']),
+    ...mapActions('master', ['scanOrderItemLabels']),
     ...mapMutations({
-      setTargetOrder: 'order_info/setTargetOrder',
+      setOrder: 'order/setOrder',
+      setIsActiveUrlKey: 'order/setIsActiveUrlKey',
     }),
     deleteDropFile(index) {
       this.dropFiles.splice(index, 1)
@@ -304,22 +321,18 @@ export default {
     },
     async checkUploadImages() {
       this.isCheckUploadImagesLoading = true
-      const formdata = new FormData()
-
-      // TODO: order_number
-      // formdata.append('orderNumber', this.targetOrder.orderNumber)
-      formdata.append('orderNumber', this.orderNumber)
+      const body = new FormData()
       for (const file of this.dropFiles) {
         if (!/\.(jpe?g|png|gif)$/i.test(file.name))
           // TODO: file check
           return alert('not image file')
-        formdata.append('files', file)
+        body.append('files', file)
       }
+      const orderId = this.order.order_id.S
+      body.append('orderId', orderId)
 
-      await fetch('/face-api', {
-        method: 'POST',
-        body: formdata,
-      })
+      const uploadImages = this.uploadImages(body)
+      await uploadImages
         .then((res) => {
           console.log(res)
           this.getOrderObjects()
@@ -332,7 +345,7 @@ export default {
       this.uploadedFiles = []
       const params = {
         Bucket: this.$aws_bucket(),
-        Prefix: this.orderNumber,
+        Prefix: this.orderId,
       }
       const listObjectsPromise = await this.$aws_s3()
         .listObjectsV2(params)
@@ -345,20 +358,28 @@ export default {
         (c) => `${url}/${listObjectsPromise.Name}/${c.Key}`
       )
     },
-    updateOrderPicture() {
-      // TODO: status value set
-      // const orderStatus = 3
-      // const orderNumber = this.orderNumber
-      // TODO: mock
-      // const updateOrder = this.updateOrder({ orderNumber, orderStatus })
+    async updatePicture() {
+      const status = this.orderStatus.find((o) => o.label_id.N === '3')
+      const productOptions = this.order.product_options.M
 
-      // this.callApis([updateOrder]).then(() => {
-      //   this.$router.push({
-      //     path: 'order_picture_add_complete',
-      //   })
-      // })
-      this.$router.push({
-        path: 'order_picture_add_complete',
+      Object.entries(this.productImgs).forEach((i) => {
+        const [key, value] = i
+        productOptions[key].M.image_urls = { SS: value }
+      })
+
+      const values = {
+        orderId: this.orderId,
+        orderStatus: status.label.S,
+        productOptions,
+      }
+      this.isLoading = true
+      const updateOrderPicture = this.updateOrderPicture(values)
+
+      this.callApis([updateOrderPicture])
+      await updateOrderPicture.then(() => {
+        this.$router.push({
+          path: '/picture/complete',
+        })
       })
     },
   },
