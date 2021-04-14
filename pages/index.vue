@@ -131,10 +131,11 @@
             <div class="column">
               <h1 class="title">商品を選ぶ</h1>
               <p class="has-text-black paragraph">
-                Scelerisque fermentum dui faucibus in ornare quam viverra orci.
-                Ultricies mi quis hendrerit dolor. Aliquet lectus proin nibh
-                nisl condimentum. Sit amet dictum sit amet justo donec. Iaculis
-                eu non diam phasellus vestibulum lorem.
+                ワルド似顔絵に登録済みの商品は、アーティストが直接登録したものです。<br />商品のサンプルイメージ・タイプを見て完成作のイメージが予想できます。<br />
+                <strong
+                  >「商品一覧」で自分が主人公になりたい絵を選んでください。</strong
+                >商品は複数登録可能です。<br />
+                ※完成日はアーティストの都合によりますが、基本写真登録してから２週間後が目安です。
               </p>
             </div>
             <div class="column">
@@ -158,12 +159,9 @@
               />
             </div>
             <div class="column">
-              <h1 class="title">注文登録・決済</h1>
+              <h1 class="title">注文登録</h1>
               <p class="has-text-black paragraph">
-                Scelerisque fermentum dui faucibus in ornare quam viverra orci.
-                Ultricies mi quis hendrerit dolor. Aliquet lectus proin nibh
-                nisl condimentum. Sit amet dictum sit amet justo donec. Iaculis
-                eu non diam phasellus vestibulum lorem.
+                選んだ商品で注文を登録します。登録はとても簡単です。登録したメール・SNSに決済ページが送信されますので、登録後、メールをご確認ください。
               </p>
             </div>
           </div>
@@ -172,12 +170,14 @@
         <div class="container">
           <div class="columns reverse-row-order">
             <div class="column">
-              <h1 class="title">写真登録</h1>
+              <h1 class="title">決済・写真登録</h1>
               <p class="has-text-black paragraph">
-                Scelerisque fermentum dui faucibus in ornare quam viverra orci.
-                Ultricies mi quis hendrerit dolor. Aliquet lectus proin nibh
-                nisl condimentum. Sit amet dictum sit amet justo donec. Iaculis
-                eu non diam phasellus vestibulum lorem.
+                ワルド似顔絵は決済システム<strong> Square(スクエア)</strong
+                >を利用しており、安全な決済が可能です。<strong>決済はクレジットカードのみ</strong>です。<br />
+                決済完了後、写真登録ページがメールに発送されます。<br />
+                写真登録ページでは商品に登録したい写真をアップロードしてください。写真登録が完了したらアーティストが作業に着手します。<br />
+                ※完成日はアーティストの都合によりますが、基本写真登録してから２週間後が目安です。<br />
+                ※写真はクラウド環境に保存され、基本登録後３ヶ月後自動削除されます。
               </p>
             </div>
             <div class="column">
@@ -204,10 +204,8 @@
             <div class="column">
               <h1 class="title">商品発送・ファイル発送</h1>
               <p class="has-text-black paragraph">
-                Scelerisque fermentum dui faucibus in ornare quam viverra orci.
-                Ultricies mi quis hendrerit dolor. Aliquet lectus proin nibh
-                nisl condimentum. Sit amet dictum sit amet justo donec. Iaculis
-                eu non diam phasellus vestibulum lorem.
+                商品を完成したら、ワルド似顔絵は商品をプリント・ラッピングして発送します。ファイルで提供します。<br />
+                ※完成作は登録した３ヶ月後自動削除されますので、削除前にスマートフォンやパソコンに保存してください。
               </p>
             </div>
           </div>
