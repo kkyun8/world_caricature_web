@@ -21,6 +21,7 @@ export const actions = {
       ExpressionAttributeNames: {
         '#OS': 'order_status',
         '#PO': 'product_options',
+        '#HP': 'has_picture',
       },
       ExpressionAttributeValues: {
         ':os': {
@@ -29,6 +30,9 @@ export const actions = {
         ':po': {
           M: values.productOptions,
         },
+        ':hp': {
+          BOOL: values.hasPicture,
+        },
       },
       Key: {
         order_id: {
@@ -36,7 +40,7 @@ export const actions = {
         },
       },
       TableName: 'orders',
-      UpdateExpression: 'SET #OS = :os, #PO = :po',
+      UpdateExpression: 'SET #OS = :os, #PO = :po, #HP = :hp',
     }
     const result = this.$aws_ddb().updateItem(params).promise()
     return result
