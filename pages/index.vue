@@ -213,33 +213,38 @@
       </section>
       <section id="sample-images">
         <div class="container my-6">
-          <h1 class="title has-text-centered">サンプルイメージ</h1>
+          <h1 class="title has-text-centered">
+            サンプルイメージ（クリックすると大きくなります。）
+          </h1>
           <hr class="rounded" />
           <b-carousel
             class="p-3"
             :autoplay="false"
             indicator-custom
             :indicator-inside="false"
-            :overlay="gallery"
-            @click="switchGallery(true)"
+            :overlay="sampleGallery"
+            @click="switchSampleImage(true)"
           >
-            <b-carousel-item v-for="(item, i) in 20" :key="i">
+            <b-carousel-item
+              v-for="(si, i) in sampleImages"
+              :key="`si-${i}`"
+              :style="sampleGallery ? 'overflow-y:auto;' : ''"
+            >
               <a class="image">
-                <img :src="getImgUrl(i)" />
+                <b-image
+                  :src="getSampleImageUrl(i)"
+                  :ratio="sampleGallery ? '' : '2by1'"
+                ></b-image>
               </a>
             </b-carousel-item>
             <span
-              v-if="gallery"
+              v-if="sampleGallery"
               class="modal-close is-large"
-              @click="switchGallery(false)"
+              @click="switchSampleImage(false)"
             />
             <template #indicators="props">
               <figure class="al image" :draggable="false">
-                <img
-                  :draggable="false"
-                  :src="getImgUrl(props.i)"
-                  :title="props.i"
-                />
+                <img :draggable="false" :src="getSampleImageUrl(props.i)" />
               </figure>
             </template>
           </b-carousel>
@@ -282,16 +287,39 @@ export default {
   name: 'Index',
   data() {
     return {
-      gallery: false,
+      sampleGallery: false,
+      sampleImages: [],
+      sampleImagesUrl: '',
     }
   },
+  created() {
+    this.getSampleImages()
+  },
   methods: {
-    getImgUrl(value) {
-      value += 50
-      return `https://picsum.photos/id/10${value}/1230/500`
+    async getSampleImages() {
+      const params = {
+        Bucket: this.$aws_bucket(),
+        Prefix: 'home/sample-images',
+      }
+      const listObjectsPromise = await this.$aws_s3()
+        .listObjectsV2(params)
+        .promise()
+
+      if (listObjectsPromise.Contents.length === 0) return false
+      const url = this.$aws_url()
+      const sample = listObjectsPromise.Contents.map((c) =>
+        c.Size > 0 ? c.Key : undefined
+      ).filter((k) => k)
+
+      this.sampleImagesUrl = `${url}/${listObjectsPromise.Name}/`
+      this.sampleImages = [...sample]
     },
-    switchGallery(value) {
-      this.gallery = value
+    getSampleImageUrl(index) {
+      const name = this.sampleImages[index]
+      return `${this.sampleImagesUrl}${name}`
+    },
+    switchSampleImage(value) {
+      this.sampleGallery = value
       if (value) {
         return document.documentElement.classList.add('is-clipped')
       } else {
