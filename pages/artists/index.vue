@@ -4,12 +4,13 @@
       <div class="content mt-6">
         <h1>作家一覧</h1>
         <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
-          accumsan, metus ultrices eleifend gravida, nulla nunc varius lectus,
-          nec rutrum justo nibh eu lectus. Ut vulputate semper dui. Fusce erat
-          odio, sollicitudin vel erat vel, interdum mattis neque. Sub works as
-          well!
+          「World
+          Caricature」は国内トップレベル、世界で活躍している作家の作品を紹介することを目指しています。
         </p>
+        <p>
+          特に作家たちの個性が重要だと思い、作家たちに特定なスタイルを要求することはありません。
+        </p>
+        <p>ぜひ、気に入った作家があればご注文ください！</p>
         <hr class="rounded" />
       </div>
       <div
@@ -27,7 +28,7 @@
             <div class="card-image">
               <figure class="image is-4by3">
                 <img
-                  src="https://bulma.io/images/placeholders/1280x960.png"
+                  :src="profileImages[a.artist_nickname.S]"
                   alt="Placeholder image"
                 />
               </figure>
@@ -55,7 +56,8 @@
         <article class="media mb-2">
           <div class="media-left">
             <img
-              src="https://bulma.io/images/placeholders/1280x960.png"
+              v-if="artistDetail.artist_nickname"
+              :src="profileImages[artistDetail.artist_nickname.S]"
               alt="Placeholder image"
               style="width: 85px; height: 85px"
             />
@@ -69,7 +71,7 @@
                 経歴年数：役{{ artistDetail.service_years.N }}年
               </p>
               <p v-if="artistDetail.career_info">
-                {{ artistDetail.career_info.S }}
+                経歴：{{ artistDetail.career_info.S }}
               </p>
             </div>
           </div>
@@ -95,6 +97,7 @@ export default {
     return {
       isArtistModalActive: false,
       artistDetail: {},
+      profileImages: {},
     }
   },
   computed: {
@@ -128,6 +131,7 @@ export default {
   },
   created() {
     this.scanArtists()
+    this.getProfileImages()
   },
   methods: {
     ...mapActions('artists', ['scanArtists']),
@@ -142,6 +146,30 @@ export default {
     openArtistProducts(nickname) {
       const artistNickname = nickname
       this.$router.push({ path: 'products', query: { artistNickname } })
+    },
+    async getProfileImages() {
+      const Prefix = 'artists/profile'
+      const params = {
+        Bucket: this.$aws_bucket(),
+        Prefix,
+      }
+      const listObjectsPromise = await this.$aws_s3()
+        .listObjectsV2(params)
+        .promise()
+
+      if (listObjectsPromise.Contents.length === 0) return false
+      const url = this.$aws_url()
+      const profiles = listObjectsPromise.Contents.map((c) =>
+        c.Size > 0 ? c.Key : undefined
+      ).filter((k) => k)
+
+      const u = `${url}/${listObjectsPromise.Name}/`
+      this.profileImages = {}
+      profiles.forEach((e) => {
+        const filename = e.replace(`${Prefix}/`, '')
+        const key = filename.substr(0, filename.indexOf('.'))
+        this.profileImages[key] = `${u}${e}`
+      })
     },
   },
 }
