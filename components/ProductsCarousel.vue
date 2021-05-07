@@ -1,19 +1,15 @@
 <template>
   <section>
     <b-carousel
-      :indicator="indicator"
-      :indicator-background="indicatorBackground"
-      :indicator-inside="indicatorInside"
-      :indicator-mode="indicatorMode"
-      :indicator-position="indicatorPosition"
-      :indicator-style="indicatorStyle"
+      :indicator="true"
+      :indicator-background="false"
+      :indicator-inside="true"
+      :indicator-mode="'hover'"
+      :indicator-position="'is-bottom'"
+      :indicator-style="'is-dots'"
     >
-      <b-carousel-item v-for="(carousel, i) in carousels" :key="i">
-        <section :class="`hero is-medium is-${carousel.color}`">
-          <div class="hero-body has-text-centered">
-            <h1 class="title">{{ carousel.title }}</h1>
-          </div>
-        </section>
+      <b-carousel-item v-for="(img, i) in images" :key="i">
+        <b-image :src="img" ratio="3by1"></b-image>
       </b-carousel-item>
     </b-carousel>
   </section>
@@ -23,19 +19,32 @@
 export default {
   data() {
     return {
-      indicator: true,
-      indicatorBackground: false,
-      indicatorInside: true,
-      indicatorMode: 'hover',
-      indicatorPosition: 'is-bottom',
-      indicatorStyle: 'is-dots',
-      carousels: [
-        { title: 'Slide 1', color: 'info' },
-        { title: 'Slide 2', color: 'success' },
-        { title: 'Slide 3', color: 'warning' },
-        { title: 'Slide 4', color: 'danger' },
-      ],
+      images: [],
     }
+  },
+  created() {
+    this.getImages()
+  },
+  methods: {
+    async getImages() {
+      const Prefix = 'products/carousel'
+      const params = {
+        Bucket: this.$aws_bucket(),
+        Prefix,
+      }
+      const listObjectsPromise = await this.$aws_s3()
+        .listObjectsV2(params)
+        .promise()
+
+      if (listObjectsPromise.Contents.length === 0) return false
+      const url = this.$aws_url()
+      const i = listObjectsPromise.Contents.map((c) =>
+        c.Size > 0 ? c.Key : undefined
+      )
+        .filter((k) => k)
+        .map((c) => `${url}/${listObjectsPromise.Name}/${c}`)
+      this.images = [...i]
+    },
   },
 }
 </script>
