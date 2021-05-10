@@ -138,12 +138,13 @@ export default {
       setCart: 'cart/setCart',
     }),
     orderConfirm() {
+      const t = this
       this.$buefy.dialog.confirm({
         message:
           '注文を確定しますか？確定後、メールに決済URLを送信いたします。',
         onConfirm: async () => {
-          const values = JSON.parse(JSON.stringify(this.order))
-          values.orderId = this.createOrderId()
+          const values = JSON.parse(JSON.stringify(t.order))
+          values.orderId = t.createOrderId()
 
           const options = Object.entries(values.productOptions).reduce(
             (a, o) => {
@@ -163,7 +164,7 @@ export default {
           )
           values.productOptions = options
 
-          const status = this.orderStatus.find((o) => o.label_id === 1)
+          const status = t.orderStatus.find((o) => o.label_id.N === '1')
           values.orderStatus = status.label.S
 
           const keyDate = new Date().getTime().toString()
@@ -175,13 +176,13 @@ export default {
 
           values.urlKey = keyDate + random.join('')
 
-          const putOrderItem = this.putOrderItem(values)
-          this.callApis([putOrderItem])
+          const putOrderItem = t.putOrderItem(values)
+          t.callApis([putOrderItem])
 
           await putOrderItem.then(() => {
-            this.setCart([])
-            this.setLocalStorage(this.cartLocalStorageKey)
-            this.$router.push({
+            t.setCart([])
+            t.setLocalStorage(t.cartLocalStorageKey)
+            t.$router.push({
               path: '/order/complete',
             })
           })
