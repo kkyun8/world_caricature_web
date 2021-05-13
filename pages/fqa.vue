@@ -14,10 +14,10 @@
               </div>
               <div class="media-content">
                 <h3 class="title is-4">
-                  {{ f.title }}
+                  {{ f.title.S }}
                 </h3>
                 <p>
-                  {{ f.text }}
+                  {{ f.text.S }}
                 </p>
               </div>
             </div>
@@ -29,26 +29,22 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
+
 export default {
   name: 'Fqa',
-  data() {
-    return {
-      // TODO: mock
-      fqa: [
-        {
-          title: "Why shouldn't I just store my data on a Hooli Box?",
-          text:
-            "That's just the thing - if you store your data in a single place, like Gavin Belsons' poorly-made server box, your data will very susceptible to hacking. Whereas on PiperNet, your data is safe with many copies to back it up from.",
-        },
-        {
-          title: 'What makes PiperNet so safe?',
-          text:
-            'Access to the public network is granted within a day, but moving all your data and integrating your existing software depends on how big your company is. Startups can expect to be fully online within a week, enterprises can take up to a month due to large reliance on legacy systems and huge datasets.',
-        },
-      ],
-    }
+  computed: {
+    ...mapState({
+      fqa: (state) => state.fqa.fqa,
+    }),
   },
-  created() {},
-  methods: {},
+  created() {
+    this.isLoading = true
+    const scanFqa = this.scanFqa()
+    this.callApis([scanFqa])
+  },
+  methods: {
+    ...mapActions('fqa', ['scanFqa']),
+  },
 }
 </script>
