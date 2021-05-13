@@ -49,7 +49,7 @@ export const actions = {
     }
     const result = this.$aws_ddb().scan(params).promise()
     await result.then((res) => {
-      const products = res.Items.filter((i) => !i.is_delete.BOOL)
+      const products = res.Items.filter((i) => !i.is_delete?.BOOL)
       commit('setProducts', products)
     })
     return result
