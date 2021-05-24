@@ -23,43 +23,7 @@
                   />
                 </figure>
               </article>
-              <div class="box my-6">
-                <article class="media">
-                  <div class="media-left">
-                    <figure class="image is-128x128">
-                      <img
-                        src="https://bulma.io/images/placeholders/128x128.png"
-                        alt="Image"
-                      />
-                    </figure>
-                  </div>
-                  <div class="media-content">
-                    <div class="content">
-                      <p>
-                        <template v-if="Object.keys(artist).length > 0">
-                          <strong
-                            >担当作家：{{ artist.artist_nickname.S }}</strong
-                          >
-                          <br />
-                          <small v-if="artist.service_years"
-                            >経歴：役{{ artist.service_years.N }}年
-                            <template v-if="artist.career_data">{{
-                              artist.career_data.S
-                            }}</template>
-                            <br />
-                          </small>
-                          <br />
-                        </template>
-
-                        作家からのコメント：{{ product.artist_comment.S }}
-                        <br />
-                      </p>
-                    </div>
-                  </div>
-                </article>
-              </div>
             </div>
-
             <div class="column">
               <h1>{{ product.title.S }}</h1>
               <div class="m-4">
@@ -100,16 +64,75 @@
               </div>
             </div>
           </div>
+          <div class="box my-6">
+            <article class="media">
+              <div class="media-left">
+                <figure class="image is-128x128">
+                  <img
+                    src="https://bulma.io/images/placeholders/128x128.png"
+                    alt="Image"
+                  />
+                </figure>
+              </div>
+              <div class="media-content">
+                <div class="content">
+                  <p>
+                    <template v-if="Object.keys(artist).length > 0">
+                      <strong>担当作家：{{ artist.artist_nickname.S }}</strong>
+                      <br />
+                      <small v-if="artist.service_years"
+                        >経歴：役{{ artist.service_years.N }}年
+                        <template v-if="artist.career_data">{{
+                          artist.career_data.S
+                        }}</template>
+                        <br />
+                      </small>
+                      <br />
+                    </template>
+                  </p>
+                  作家からのコメント：<br />
+                  <p>{{ product.artist_comment.S }}</p>
+                  <br />
+                </div>
+              </div>
+            </article>
+          </div>
           <b-tabs position="is-centered" expanded>
             <b-tab-item label="商品詳細" icon="google-photos">
+              <!-- TODO: size url -->
               {{ product.product_detail_image_url.S }}
             </b-tab-item>
-            <b-tab-item label="レビュー" icon="library-music"></b-tab-item>
+            <b-tab-item label="クチコミ" icon="library-music">
+              <product-comment />
+            </b-tab-item>
             <b-tab-item
               label="返品・払い戻しについて"
               icon="video"
             ></b-tab-item>
           </b-tabs>
+          <div class="columns">
+            <div class="column">
+              <b-button
+                type="is-primary is-light"
+                icon-pack="fas"
+                icon-left="cart-plus"
+                expanded
+                @click="pushCart"
+                >カートに追加</b-button
+              >
+            </div>
+            <div class="column">
+              <nuxt-link to="/products"
+                ><b-button
+                  type="is-warning is-light"
+                  icon-pack="fas"
+                  icon-left="list-alt"
+                  expanded
+                  >一覧に戻る</b-button
+                ></nuxt-link
+              >
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -118,10 +141,12 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex'
-
+import ProductComment from '~/components/ProductComment'
 export default {
   name: 'ProductDetail',
-
+  components: {
+    ProductComment,
+  },
   computed: {
     ...mapState({
       artist: (state) => state.artists.artist,
@@ -152,6 +177,7 @@ export default {
     this.callApis([getProductItem])
   },
   methods: {
+    ...mapActions('artists', ['queryArtistArtistNickname']),
     ...mapActions('artists', ['queryArtistArtistNickname']),
     ...mapActions('products', ['getProductItem']),
     ...mapMutations({
