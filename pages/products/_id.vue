@@ -154,6 +154,7 @@ export default {
       cart: (state) => state.cart.cart,
       cartMaxCount: (state) => state.cart.cartMaxCount,
       cartLocalStorageKey: (state) => state.common.cartLocalStorageKey,
+      productComments: (state) => state.comment.productComments,
     }),
     orderTypeName() {
       if (!this.product.id) return ''
@@ -174,12 +175,17 @@ export default {
   created() {
     this.isLoading = true
     const getProductItem = this.getProductItem({ id: this.$route.params.id })
-    this.callApis([getProductItem])
+    const queryProductComments = this.queryProductComments({
+      product_id: this.$route.params.id,
+    })
+
+    this.callApis([getProductItem, queryProductComments])
   },
   methods: {
     ...mapActions('artists', ['queryArtistArtistNickname']),
     ...mapActions('artists', ['queryArtistArtistNickname']),
     ...mapActions('products', ['getProductItem']),
+    ...mapActions('comment', ['queryProductComments']),
     ...mapMutations({
       setCart: 'cart/setCart',
     }),
