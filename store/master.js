@@ -3,6 +3,11 @@ export const state = () => ({
   orderStatus: [],
   orderTypes: [],
   productionTimes: [],
+  // TODO: get dynamodb
+  // flameSize L + ¥1500
+  // wrapping  + ¥1000
+  flamePrice: 1500,
+  wrappingPrice: 1000,
 })
 
 export const mutations = {

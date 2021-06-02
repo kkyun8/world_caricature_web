@@ -46,11 +46,11 @@
                   </div>
                   <div class="border-bottom-line">
                     <span>フレーム追加価格</span>
-                    <span>{{ flamePrice }}円</span>
+                    <span>{{ totalFlamePrice }}円</span>
                   </div>
                   <div class="border-bottom-line">
                     <span>ラッピング追加価格</span>
-                    <span>{{ wrappingPrice }}円</span>
+                    <span>{{ totalWrappingPrice }}円</span>
                   </div>
                   <div class="border-bottom-line">
                     <span>支払い金額</span>
@@ -280,15 +280,18 @@ export default {
       ],
       editOrder: {},
       emailConfirm: '',
-      // TODO: price反映が遅い
       productOptions: {},
       isTermChecked: false,
+      totalFlamePrice: 0,
+      totalWrappingPrice: 0,
     }
   },
   computed: {
     ...mapState({
       defaultOrder: (state) => state.order.defaultOrder,
       cart: (state) => state.cart.cart,
+      flamePrice: (state) => state.master.flamePrice,
+      wrappingPrice: (state) => state.master.wrappingPrice,
     }),
     ...mapGetters({
       productItemInCart: 'products/productItemInCart',
@@ -318,28 +321,8 @@ export default {
       }, 0)
       return result
     },
-    // TODO:
-    // flameSize L + ¥1500
-    flamePrice() {
-      const options = this.productOptions
-      const result = this.cartItems.reduce((a, i) => {
-        const flame = options[i.id]?.flameSize === 'L' ? 1500 : 0
-        return a + flame
-      }, 0)
-      return result
-    },
-    // TODO:
-    // wrapping  + ¥1000
-    wrappingPrice() {
-      const options = this.productOptions
-      const result = this.cartItems.reduce((a, i) => {
-        const wrapping = options[i.id]?.premiumWrapping ? 1000 : 0
-        return a + wrapping
-      }, 0)
-      return result
-    },
     totalPrice() {
-      return this.productPrice + this.flamePrice + this.wrappingPrice
+      return this.productPrice + this.totalFlamePrice + this.totalWrappingPrice
     },
     isNotValidated() {
       const checkFmsg = (field) => {
@@ -385,6 +368,23 @@ export default {
       },
       deep: true,
     },
+    productOptions: {
+      handler(newVal) {
+        const flame = Object.keys(newVal).reduce((a, r) => {
+          const result = newVal[r]?.flameSize === 'L' ? this.flamePrice : 0
+          return a + result
+        }, 0)
+
+        const wrapping = Object.keys(newVal).reduce((a, r) => {
+          const result = newVal[r]?.premiumWrapping ? this.wrappingPrice : 0
+          return a + result
+        }, 0)
+
+        this.totalFlamePrice = flame
+        this.totalWrappingPrice = wrapping
+      },
+      deep: true,
+    },
   },
   created() {
     this.editOrder = JSON.parse(JSON.stringify(this.defaultOrder))
@@ -401,7 +401,10 @@ export default {
       }
       return a
     }, {})
-    this.productOptions = result
+
+    Object.keys(result).forEach((r) =>
+      this.$set(this.productOptions, r, result[r])
+    )
   },
   beforeDestroy() {
     this.editOrder = {}
