@@ -12,6 +12,7 @@ const {
   AWS_DEFAULT_REGION,
   AWS_BUCKET,
   AWS_URL,
+  AWS_DYNAMODB,
   LINE_CHANNEL_ACCESS_TOKEN,
   LINE_CHANNEL_SECRET,
   POSTAL_CODE_API_URL,
@@ -116,6 +117,9 @@ export default {
     '/face-api': {
       target: 'http://localhost:4000',
     },
+    '/dynamodb': {
+      // dynamodb apigateway
+    },
     'http://localhost:3000/dynamodb': {
       target: 'http://localhost:8000 ',
       pathRewrite: {
@@ -137,6 +141,7 @@ export default {
     AWS_DEFAULT_REGION,
     AWS_BUCKET,
     AWS_URL,
+    AWS_DYNAMODB,
     LINE_CHANNEL_ACCESS_TOKEN,
     LINE_CHANNEL_SECRET,
     POSTAL_CODE_API_URL,
