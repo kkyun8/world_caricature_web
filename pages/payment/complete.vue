@@ -21,6 +21,7 @@
 // import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
+  layout: 'only_footer',
   data() {
     return {
       isNoticeModalActive: true,
@@ -28,7 +29,7 @@ export default {
   },
   // computed: {
   //   ...mapState({
-  //     targetOrder: (state) => state.order_info.targetOrder,
+  //     targetOrder: (state) => state.order.targetOrder,
   //   }),
   // },
   // created() {
@@ -41,9 +42,9 @@ export default {
   //   this.setTargetOrder(null)
   // },
   // methods: {
-  //   ...mapActions('order_info', ['readOrder']),
+  //   ...mapActions('order', ['readOrder']),
   //   ...mapMutations({
-  //     setTargetOrder: 'order_info/setTargetOrder',
+  //     setTargetOrder: 'order/setTargetOrder',
   //   }),
   // },
 }

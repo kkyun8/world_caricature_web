@@ -26,12 +26,14 @@
       </template>
 
       <template #end>
-        <!-- TODO: login icon
-          <div class="navbar-item">
-          <font-awesome-layers full-width class="fa-2x has-text-primary">
-            <font-awesome-icon icon="sign-in-alt" class="is-primary" />
-          </font-awesome-layers>
-        </div> -->
+        <div class="navbar-item">
+          <b-button
+            type="is-primary is-light"
+            :disabled="cartCount === 0"
+            @click="createOrder()"
+            >注文作成</b-button
+          >
+        </div>
         <div class="navbar-item">
           <font-awesome-layers
             full-width
@@ -95,10 +97,10 @@
               </b-table-column>
               <b-table-column
                 v-slot="props"
-                field="number_of_people"
+                field="numberOfPeople"
                 label="人数"
               >
-                {{ props.row.number_of_people.N }}名
+                {{ props.row.numberOfPeople.N }}名
               </b-table-column>
               <b-table-column v-slot="props" field="price" label="値段">
                 {{ props.row.price.N }}円
@@ -182,16 +184,16 @@ export default {
   },
   created() {
     this.isLoading = true
-    const scanProducts = this.scanProducts()
-    const scanOrderItemLabels = this.scanOrderItemLabels()
-    this.callApis([scanProducts, scanOrderItemLabels])
+    const queryProducts = this.queryProducts()
+    const queryLabels = this.queryLabels()
+    this.callApis([queryProducts, queryLabels])
   },
   mounted() {
     this.checkLocalStorage()
   },
   methods: {
-    ...mapActions('products', ['scanProducts']),
-    ...mapActions('master', ['scanOrderItemLabels']),
+    ...mapActions('products', ['queryProducts']),
+    ...mapActions('master', ['queryLabels']),
     ...mapMutations({
       setCart: 'cart/setCart',
     }),

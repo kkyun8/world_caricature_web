@@ -29,7 +29,7 @@
         <div class="content">
           <!-- TODO: 詳細情報デザイン -->
           値段：{{ product.price.N }}円 作業人数：{{
-            product.number_of_people.N
+            product.numberOfPeople.N
           }}名
           <template v-if="productOptions[product.id.S]">
             <b-field>
@@ -75,6 +75,14 @@ export default {
       return this.cartItems.map((i, index) => -1)
     },
   },
+  // watch: {
+  //   productOptions: {
+  //     handler(newVal) {
+  //       console.log(newVal)
+  //     },
+  //     deep: true,
+  //   },
+  // },
 }
 </script>
 

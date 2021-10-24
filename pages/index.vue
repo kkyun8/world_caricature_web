@@ -211,7 +211,7 @@
           </div>
         </div>
       </section>
-      <section id="sample-images">
+      <section id="sample-images" class="my-6">
         <div class="container my-6">
           <h1 class="title has-text-centered">
             サンプルイメージ（クリックすると大きくなります。）
@@ -219,7 +219,8 @@
           <hr class="rounded" />
           <b-carousel
             class="p-3"
-            :autoplay="false"
+            :autoplay="true"
+            :repeat="true"
             indicator-custom
             :indicator-inside="false"
             :overlay="sampleGallery"

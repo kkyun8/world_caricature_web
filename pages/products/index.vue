@@ -156,9 +156,9 @@ export default {
             return (
               i.title.S.includes(h) ||
               i.information.S.includes(h) ||
-              i.order_type.SS.includes(h) ||
-              i.production_time.S.includes(h) ||
-              i.artist_nickname?.S.includes(h)
+              i.orderType.SS.includes(h) ||
+              i.productionTime.S.includes(h) ||
+              i.artistNickname?.S.includes(h)
             )
           })
         })

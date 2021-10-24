@@ -28,7 +28,7 @@
             <div class="card-image">
               <figure class="image is-4by3">
                 <img
-                  :src="profileImages[a.artist_nickname.S]"
+                  :src="profileImages[a.artistNickname.S]"
                   alt="Placeholder image"
                 />
               </figure>
@@ -36,8 +36,8 @@
             <div class="card-content">
               <div class="media">
                 <div class="media-content">
-                  <p v-if="a.artist_nickname" class="title is-4">
-                    {{ a.artist_nickname.S }}
+                  <p v-if="a.artistNickname" class="title is-4">
+                    {{ a.artistNickname.S }}
                   </p>
                 </div>
               </div>
@@ -56,22 +56,22 @@
         <article class="media mb-2">
           <div class="media-left">
             <img
-              v-if="artistDetail.artist_nickname"
-              :src="profileImages[artistDetail.artist_nickname.S]"
+              v-if="artistDetail.artistNickname"
+              :src="profileImages[artistDetail.artistNickname.S]"
               alt="Placeholder image"
               style="width: 85px; height: 85px"
             />
           </div>
           <div class="media-content">
             <div class="content">
-              <strong v-if="artistDetail.artist_nickname">
-                {{ artistDetail.artist_nickname.S }}
+              <strong v-if="artistDetail.artistNickname">
+                {{ artistDetail.artistNickname.S }}
               </strong>
-              <p v-if="artistDetail.service_years">
-                経歴年数：役{{ artistDetail.service_years.N }}年
+              <p v-if="artistDetail.serviceYears">
+                経歴年数：役{{ artistDetail.serviceYears.N }}年
               </p>
-              <p v-if="artistDetail.career_info">
-                経歴：{{ artistDetail.career_info.S }}
+              <p v-if="artistDetail.careerInfo">
+                経歴：{{ artistDetail.careerInfo.S }}
               </p>
             </div>
           </div>
@@ -79,7 +79,7 @@
         <b-button
           type="is-primary"
           expanded
-          @click="openArtistProducts(artistDetail.artist_nickname.S)"
+          @click="openArtistProducts(artistDetail.artistNickname.S)"
           >この作家の商品をみる</b-button
         >
       </div>
@@ -110,13 +110,13 @@ export default {
       }
       const list = this.artists.slice()
       list.sort((a, b) => {
-        if (!a.updated_at && !b.updated_at) {
-          return a.artist_nickname.S < b.artist_nickname.S
+        if (!a.updatedAt && !b.updatedAt) {
+          return a.artistNickname.S < b.artistNickname.S
         } else {
-          if (a.updated_at && b.updated_at) {
-            return moment(a.updated_at.S).isBefore(b.updated_at.S) ? -1 : 1
+          if (a.updatedAt && b.updatedAt) {
+            return moment(a.updatedAt.S).isBefore(b.updatedAt.S) ? -1 : 1
           }
-          return a.updated_at.S ? -1 : 1
+          return a.updatedAt.S ? -1 : 1
         }
       })
 
@@ -130,11 +130,11 @@ export default {
     },
   },
   created() {
-    this.scanArtists()
+    this.queryArtists()
     this.getProfileImages()
   },
   methods: {
-    ...mapActions('artists', ['scanArtists']),
+    ...mapActions('artists', ['queryArtists']),
     openArtistModal(artist) {
       this.isArtistModalActive = true
       this.artistDetail = JSON.parse(JSON.stringify(artist))

@@ -53,7 +53,7 @@
                     <span>{{ totalWrappingPrice }}円</span>
                   </div>
                   <div class="border-bottom-line">
-                    <span>支払い金額</span>
+                    <strong>支払い金額</strong>
                     <span>{{ totalPrice }}円</span>
                   </div>
                 </div>
@@ -395,7 +395,7 @@ export default {
       a[id.S] = {
         title: title.S,
         price: price.N,
-        numberOfPeople: c.number_of_people.N,
+        numberOfPeople: c.numberOfPeople.N,
         flameSize,
         premiumWrapping,
       }

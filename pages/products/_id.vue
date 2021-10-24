@@ -26,18 +26,20 @@
             </div>
             <div class="column">
               <h1>{{ product.title.S }}</h1>
-              <div class="m-4">
+              <div v-if="product.information" class="m-4">
                 {{ product.information.S }}
               </div>
               <div class="m-4">
-                人数：{{ product.number_of_people.N }}名
+                人数：{{ product.numberOfPeople.N }}名
                 <br />
                 タイプ：{{ orderTypeName }}
                 <br />
                 {{ product.price.N }}円
                 <br />
-                作業時間：
-                {{ product.production_time.S }}
+                <template v-if="product.productionTime.S">
+                  作業時間：
+                  {{ product.productionTime.S }}
+                </template>
               </div>
               <div class="columns">
                 <div class="column">
@@ -78,29 +80,33 @@
                 <div class="content">
                   <p>
                     <template v-if="Object.keys(artist).length > 0">
-                      <strong>担当作家：{{ artist.artist_nickname.S }}</strong>
+                      <strong>担当作家：{{ artist.artistNickname.S }}</strong>
                       <br />
-                      <small v-if="artist.service_years"
-                        >経歴：役{{ artist.service_years.N }}年
-                        <template v-if="artist.career_data">{{
-                          artist.career_data.S
+                      <small v-if="artist.serviceYears"
+                        >経歴：役{{ artist.serviceYears.N }}年
+                        <template v-if="artist.careerData">{{
+                          artist.careerData.S
                         }}</template>
                         <br />
                       </small>
                       <br />
                     </template>
                   </p>
-                  作家からのコメント：<br />
-                  <p>{{ product.artist_comment.S }}</p>
-                  <br />
+                  <template v-if="product.artistComment">
+                    作家からのコメント：<br />
+                    <p>{{ product.artistComment.S }}</p>
+                    <br />
+                  </template>
                 </div>
               </div>
             </article>
           </div>
-          <b-tabs position="is-centered" expanded>
+          <b-tabs position="is-centered" expanded class="my-6">
             <b-tab-item label="商品詳細" icon="google-photos">
               <!-- TODO: size url -->
-              {{ product.product_detail_image_url.S }}
+              <template v-if="product.productDetailImageUrl">
+                {{ product.productDetailImageUrl.S }}
+              </template>
             </b-tab-item>
             <b-tab-item label="クチコミ" icon="library-music">
               <product-comment />
@@ -110,7 +116,7 @@
               icon="video"
             ></b-tab-item>
           </b-tabs>
-          <div class="columns">
+          <div class="columns mt-6">
             <div class="column">
               <b-button
                 type="is-primary is-light"
@@ -158,15 +164,15 @@ export default {
     }),
     orderTypeName() {
       if (!this.product.id) return ''
-      const result = this.product.order_type.SS.join('、')
+      const result = this.product.orderType.SS.join('、')
       return result
     },
   },
   watch: {
     product(newVal) {
-      if (newVal?.artist_nickname.S) {
+      if (newVal?.artistNickname.S) {
         const queryArtistArtistNickname = this.queryArtistArtistNickname({
-          artistNickname: newVal.artist_nickname.S,
+          artistNickname: newVal.artistNickname.S,
         })
         this.callApis([queryArtistArtistNickname])
       }
@@ -176,7 +182,7 @@ export default {
     this.isLoading = true
     const getProductItem = this.getProductItem({ id: this.$route.params.id })
     const queryProductComments = this.queryProductComments({
-      product_id: this.$route.params.id,
+      productId: this.$route.params.id,
     })
 
     this.callApis([getProductItem, queryProductComments])

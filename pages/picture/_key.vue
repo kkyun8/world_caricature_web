@@ -19,12 +19,12 @@
           <div class="columns">
             <div class="column">
               <b-field label="名前（漢字）">
-                <b-input v-model="order.name_kanzi.S" disabled></b-input>
+                <b-input v-model="order.nameKanzi.S" disabled></b-input>
               </b-field>
             </div>
             <div class="column">
               <b-field label="名前（フリガナ）">
-                <b-input v-model="order.name_furigana.S" disabled></b-input>
+                <b-input v-model="order.nameFurigana.S" disabled></b-input>
               </b-field>
             </div>
           </div>
@@ -97,13 +97,13 @@
           <div v-if="uploadedFiles.length > 0" class="box m-3">
             <p class="is-size-4">アップロード写真から顔を選択してください。</p>
             <div
-              v-for="(o, oidx) in order.product_options.M"
+              v-for="(o, oidx) in order.productOptions.M"
               :key="`po-${oidx}`"
               class="box"
             >
-              作品名：{{ o.M.title.S }} 人数：{{ o.M.number_of_people.N }}名
-              サイズ：{{ o.M.flame_size.N }} プレミアムラッピング有無：<template
-                v-if="o.M.premium_wrapping.BOOL"
+              作品名：{{ o.M.title.S }} 人数：{{ o.M.numberOfPeople.N }}名
+              サイズ：{{ o.M.flameSize.N }} プレミアムラッピング有無：<template
+                v-if="o.M.premiumWrapping.BOOL"
                 >あり</template
               ><template v-else>なし</template>
               <b-button @click="openProductImgModal(oidx)"
@@ -211,6 +211,7 @@ export default {
       isProductImgAddModalActive: false,
       productImgs: {},
       productImgModalTargetId: 0,
+      isActiveKey: true,
     }
   },
   computed: {
@@ -222,7 +223,7 @@ export default {
     orderId() {
       if (this.order) {
         this.setIsActiveUrlKey(true)
-        return this.order.order_id.S
+        return this.order.orderId.S
       }
       return ''
     },
@@ -231,9 +232,9 @@ export default {
         return 0
       }
 
-      const result = Object.values(this.order.product_options.M).reduce(
+      const result = Object.values(this.order.productOptions.M).reduce(
         (a, p) => {
-          a = a + parseInt(p.M.number_of_people.N)
+          a = a + parseInt(p.M.numberOfPeople.N)
           return a
         },
         0
@@ -257,7 +258,7 @@ export default {
     },
     order(newVal) {
       if (newVal) {
-        this.productImgs = Object.keys(newVal.product_options.M).reduce(
+        this.productImgs = Object.keys(newVal.productOptions.M).reduce(
           (a, p) => {
             a[p] = []
             return a
@@ -279,14 +280,14 @@ export default {
     this.callApis([getOrderItemFromUrlKey])
 
     await getOrderItemFromUrlKey.then(() => {
-      const scanOrderItemLabels = this.scanOrderItemLabels()
-      this.callApis([scanOrderItemLabels])
+      const queryLabels = this.queryLabels()
+      this.callApis([queryLabels])
     })
   },
   methods: {
-    ...mapActions('order', ['getOrderItemFromUrlKey', 'readOrder']),
+    ...mapActions('order', ['getOrderItemFromUrlKey']),
     ...mapActions('picture', ['uploadImages', 'updateOrderPicture']),
-    ...mapActions('master', ['scanOrderItemLabels']),
+    ...mapActions('master', ['queryLabels']),
     ...mapMutations({
       setOrder: 'order/setOrder',
       setIsActiveUrlKey: 'order/setIsActiveUrlKey',
@@ -328,7 +329,7 @@ export default {
           return alert('not image file')
         body.append('files', file)
       }
-      const orderId = this.order.order_id.S
+      const orderId = this.order.orderId.S
       body.append('orderId', orderId)
 
       const uploadImages = this.uploadImages(body)
@@ -359,18 +360,19 @@ export default {
       )
     },
     async updatePicture() {
-      const status = this.orderStatus.find((o) => o.label_id.N === '3')
-      const productOptions = this.order.product_options.M
+      const status = this.orderStatus.find((o) => o.labelId.N === '3')
+      const productOptions = this.order.productOptions.M
 
       Object.entries(this.productImgs).forEach((i) => {
         const [key, value] = i
-        productOptions[key].M.image_urls = { SS: value }
+        productOptions[key].M.imageUrls = { SS: value }
       })
 
       const values = {
         orderId: this.orderId,
         orderStatus: status.label.S,
         productOptions,
+        hasPicture: true,
       }
       this.isLoading = true
       const updateOrderPicture = this.updateOrderPicture(values)

@@ -29,14 +29,14 @@
                       <div class="order-info-row">
                         <div class="border-bottom-line">
                           {{ orderLabelObj['nameKanzi'] }}:{{
-                            order.name_kanzi.S
+                            order.nameKanzi.S
                           }}
                         </div>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
                           {{ orderLabelObj['nameFurigana'] }}:{{
-                            order.name_furigana.S
+                            order.nameFurigana.S
                           }}
                         </span>
                       </div>
@@ -46,13 +46,13 @@
                         </span>
                         <span class="border-bottom-line">
                           {{ orderLabelObj['cellPhoneNumber'] }}:
-                          {{ order.cell_phone_number.S }}
+                          {{ order.cellPhoneNumber.S }}
                         </span>
                       </div>
                       <div class="order-info-row">
                         <span class="border-bottom-line">
                           {{ orderLabelObj['postalCode'] }}:{{
-                            order.postal_code.S
+                            order.postalCode.S
                           }}
                         </span>
                       </div>
@@ -236,21 +236,23 @@ export default {
 
     getOrderItemFromUrlKey
       .then(() => {
-        this.isActiveKey = true
-        this.setPaymentForm()
+        if (this.order.paymentOrderId.S) {
+          this.isActiveKey = true
+          this.setPaymentForm()
+        }
       })
       .catch(() => (this.isActiveKey = false))
   },
   created() {
     this.isLoading = true
-    const scanProducts = this.scanProducts()
-    const scanOrderItemLabels = this.scanOrderItemLabels()
-    this.callApis([scanProducts, scanOrderItemLabels])
+    const queryProducts = this.queryProducts()
+    const queryLabels = this.queryLabels()
+    this.callApis([queryProducts, queryLabels])
   },
   methods: {
-    ...mapActions('products', ['scanProducts']),
+    ...mapActions('products', ['queryProducts']),
     ...mapActions('order', ['getOrderItemFromUrlKey']),
-    ...mapActions('master', ['scanOrderItemLabels']),
+    ...mapActions('master', ['queryLabels']),
     ...mapActions('payment', ['createPayment']),
     ...mapMutations({
       setOrder: 'order/setOrder',

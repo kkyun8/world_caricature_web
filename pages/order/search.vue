@@ -45,7 +45,7 @@
                 <div class="card">
                   <header class="card-header">
                     <span class="card-header-title"
-                      >注文番号：{{ order.order_id.S }}</span
+                      >注文番号：{{ order.orderId.S }}</span
                     >
                   </header>
                   <div class="card-content">
@@ -78,12 +78,12 @@
                         </div>
                         <b-field horizontal label="名前">
                           <b-input
-                            :value="order.name_kanzi.S"
+                            :value="order.nameKanzi.S"
                             disabled
                             expanded
                           ></b-input>
                           <b-input
-                            :value="order.name_furigana.S"
+                            :value="order.nameFurigana.S"
                             disabled
                             expanded
                           ></b-input>
@@ -107,7 +107,7 @@
                             expanded
                           ></b-input>
                           <b-input
-                            :value="order.cell_phone_number.S"
+                            :value="order.cellPhoneNumber.S"
                             disabled
                             expanded
                           ></b-input>

@@ -152,9 +152,9 @@ export default {
               const value = {
                 M: {
                   title: { S: v.title },
-                  number_of_people: { N: v.numberOfPeople },
-                  flame_size: { S: v.flameSize },
-                  premium_wrapping: { BOOL: v.premiumWrapping },
+                  numberOfPeople: { N: v.numberOfPeople },
+                  flameSize: { S: v.flameSize },
+                  premiumWrapping: { BOOL: v.premiumWrapping },
                 },
               }
               a[k] = value
@@ -164,7 +164,7 @@ export default {
           )
           values.productOptions = options
 
-          const status = t.orderStatus.find((o) => o.label_id.N === '1')
+          const status = t.orderStatus.find((o) => o.labelId.N === '1')
           values.orderStatus = status.label.S
 
           const keyDate = new Date().getTime().toString()
