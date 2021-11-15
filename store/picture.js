@@ -1,3 +1,5 @@
+import { orderKey } from './common'
+
 export const state = () => ({
   isSqPaymentLoading: false,
 })
@@ -16,33 +18,11 @@ export const actions = {
     })
     return result
   },
-  updateOrderPicture({ commit }, values) {
-    const params = {
-      ExpressionAttributeNames: {
-        '#OS': 'order_status',
-        '#PO': 'product_options',
-        '#HP': 'has_picture',
-      },
-      ExpressionAttributeValues: {
-        ':os': {
-          S: values.orderStatus,
-        },
-        ':po': {
-          M: values.productOptions,
-        },
-        ':hp': {
-          BOOL: values.hasPicture,
-        },
-      },
-      Key: {
-        order_id: {
-          S: values.orderId,
-        },
-      },
-      TableName: 'orders',
-      UpdateExpression: 'SET #OS = :os, #PO = :po, #HP = :hp',
-    }
-    const result = this.$aws_ddb().updateItem(params).promise()
+  updateOrderPicture({ commit }, params) {
+    const result = this.$axios.$post(
+      `/dynamodb/${orderKey}${params.orderId}`,
+      params
+    )
     return result
   },
 }

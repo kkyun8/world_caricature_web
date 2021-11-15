@@ -1,11 +1,17 @@
+import {
+  checkResponse,
+  labelKey,
+  orderStatesKey,
+  orderTypesKey,
+  productionTimesKey,
+} from './common'
+
 export const state = () => ({
   productHashTags: [],
   orderStatus: [],
   orderTypes: [],
   productionTimes: [],
   // TODO: get dynamodb
-  // flameSize L + ¥1500
-  // wrapping  + ¥1000
   flamePrice: 1500,
   wrappingPrice: 1000,
 })
@@ -26,24 +32,26 @@ export const mutations = {
 }
 
 export const actions = {
-  async scanOrderItemLabels({ commit }) {
-    const params = {
-      TableName: 'order_item_labels',
-    }
-    const result = this.$aws_ddb().scan(params).promise()
-    await result.then((res) => {
-      const orderStatus = res.Items.filter(
-        (i) => i.item_id.S === 'order_status'
-      )
-      const orderTypes = res.Items.filter((i) => i.item_id.S === 'order_types')
-      const productionTimes = res.Items.filter(
-        (i) => i.item_id.S === 'production_times'
-      )
+  async queryLabels({ commit }) {
+    const result = await this.$axios
+      .$get(`/dynamodb/pk-index/${labelKey}`)
+      .then((res) => {
+        if (!checkResponse(res)) return
+        const orderStatus = res.Items.filter((i) =>
+          i.SK.S.includes(orderStatesKey)
+        )
+        const orderTypes = res.Items.filter((i) =>
+          i.SK.S.includes(orderTypesKey)
+        )
 
-      commit('setOrderStatus', orderStatus)
-      commit('setOrderTypes', orderTypes)
-      commit('setProductionTimes', productionTimes)
-    })
+        const productionTimes = res.Items.filter((i) =>
+          i.SK.S.includes(productionTimesKey)
+        )
+
+        commit('setOrderStatus', orderStatus)
+        commit('setOrderTypes', orderTypes)
+        commit('setProductionTimes', productionTimes)
+      })
     return result
   },
   // TODO: scanHashTags

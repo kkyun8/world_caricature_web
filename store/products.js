@@ -1,4 +1,4 @@
-const TableName = 'products'
+import { checkResponse, productKey } from './common'
 
 export const state = () => ({
   products: [],
@@ -16,7 +16,7 @@ export const mutations = {
 
 export const getters = {
   productItemInCart: (state) => (cart) => {
-    // deep copy
+    // deep copy TODO:
     return cart.map((c) => {
       if (state.products.length > 0) {
         return JSON.parse(
@@ -27,14 +27,14 @@ export const getters = {
   },
   productTags(state) {
     const tags = state.products.reduce((a, r) => {
-      r.order_type.SS.forEach((o) => a.add(o))
+      r.orderType.SS.forEach((o) => a.add(o))
       a.add(r.title.S)
-      a.add(r.number_of_people.N)
+      a.add(r.numberOfPeople.N)
       a.add(r.price.N)
-      a.add(r.production_time.S)
+      a.add(r.productionTime.S)
       a.add(r.information.S)
-      a.add(r.artist_comment.S)
-      a.add(r.artist_nickname.S)
+      a.add(r.artistComment.S)
+      a.add(r.artistNickname.S)
       return a
     }, new Set())
 
@@ -43,35 +43,24 @@ export const getters = {
 }
 
 export const actions = {
-  async scanProducts({ commit }) {
-    const params = {
-      TableName,
-    }
-    const result = this.$aws_ddb().scan(params).promise()
-    await result.then((res) => {
-      const products = res.Items.filter((i) => !i.is_delete?.BOOL)
-      commit('setProducts', products)
-    })
+  async queryProducts({ commit }) {
+    // TODO: pagination
+    const result = await this.$axios
+      .$get(`/dynamodb/pk-index/${productKey}`)
+      .then((res) => {
+        if (!checkResponse(res)) return
+        const products = res.Items.filter((i) => !i.isDelete?.BOOL)
+        commit('setProducts', products)
+      })
     return result
   },
   async getProductItem({ commit }, values) {
-    const params = {
-      TableName,
-      Key: {
-        id: { S: values.id },
-      },
-    }
-    const result = this.$aws_ddb().getItem(params).promise()
-    await result.then((res) => {
-      commit('setProduct', res.Item)
-    })
-    return result
-  },
-  async readProduct({ commit }, params) {
+    const { pk, sk } = values
     const result = await this.$axios
-      .$get(`/products/${params.id}`)
+      .$get(`/dynamodb/${pk}/${sk}`)
       .then((res) => {
-        commit('setProduct', res)
+        if (!checkResponse(res)) return
+        commit('setProduct', res.Item)
       })
     return result
   },
